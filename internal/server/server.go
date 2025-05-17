@@ -39,7 +39,9 @@ func defineApiRouterV1Endpoints() http.Handler {
 	router := http.NewServeMux()
 	// API /api/v1 route endpoints
 	router.HandleFunc("GET /healthz", v1.HealthHandler)
+	router.HandleFunc("GET /categories", v1.GetAllCategoriesHandler)
 	router.HandleFunc("GET /transactions", v1.GetTransactionsHandler)
+	router.HandleFunc("POST /transactions", v1.AddTransactionHandler)
 
 	return router
 }
