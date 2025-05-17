@@ -14,7 +14,7 @@ type Core struct {
 	Logger          *log.Logger
 	GoogleProjectId string
 
-	BQClient *bigquery.Client
+	BQClient *CustomBigQueryClient
 }
 
 // InitCore - initializes all the important services and instances requires to run the project
@@ -31,7 +31,7 @@ func InitCore() *Core {
 	if err != nil {
 		log.Panic("not able to initialize the bigquery client: %w", err)
 	}
-	co.BQClient = bqClient
+	co.BQClient = &CustomBigQueryClient{*bqClient}
 
 	return co
 }
