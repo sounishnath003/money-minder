@@ -13,15 +13,20 @@ type ErrorResponse struct {
 	ErrorMessage string `json:"errorMessage"`
 }
 
+// SuccessResponse central success response while
+// sending a SUCESS JSON response back to client
 type SuccessResponse struct {
 	Data interface{} `json:"data"`
 }
 
+// FaliureResponse central failure response while
+// sending a FAILURE JSON response back to client
 type FaliureResponse struct {
 	Error interface{} `json:"error"`
 }
 
 // jsonResponse sends the response as response to the clients
+// use the method to efficiently send any success or failure responses to the clients
 func jsonResponse(statusCode int, w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Request-ID", uuid.New().String())

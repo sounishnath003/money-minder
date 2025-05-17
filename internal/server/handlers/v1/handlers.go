@@ -11,6 +11,7 @@ type HealthEndpoint struct {
 	Hostname string `json:"hostname"`
 }
 
+// HealthHandler helps to track and check all the health params of the service
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
