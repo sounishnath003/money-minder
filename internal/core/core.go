@@ -22,7 +22,7 @@ func InitCore() *Core {
 	co := &Core{
 		Port:            utility.GetNumberValueFromEnv("PORT", 3000),
 		Hostname:        utility.GetStringValueFromEnv("HOSTNAME", "localhost"),
-		GoogleProjectId: utility.GetStringValueFromEnv("GOOGLE_PROJECT_ID", "sounishnath-cloud-workstation"),
+		GoogleProjectId: utility.GetStringValueFromEnv("GOOGLE_PROJECT_ID", "sounish-cloud-workstation"),
 		Logger:          log.Default(),
 	}
 

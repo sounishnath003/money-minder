@@ -10,6 +10,24 @@ import (
 
 type Middleware func(http.Handler) http.Handler
 
+// AddContextMiddleware helps to add context into the requests based on the key provided
+func AddContextMiddleware(key string, co *core.Core) Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Create a new context with the core instance
+			ctx := context.WithValue(r.Context(), key, co)
+
+			// Create a new request with the updated context
+			r = r.WithContext(ctx)
+
+			// Call the next handler
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// LoggerMiddleware helps to check the logger middleware, which logs
+// all the requests which ever comes to the server
 func LoggerMiddleware(co *core.Core) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

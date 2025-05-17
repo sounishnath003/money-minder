@@ -30,7 +30,7 @@ func (s *Server) Start() {
 		s.Co.Logger.Printf("server has been started on http://%s:%d", s.Co.Hostname, s.Co.Port)
 	}()
 	// Enforce middleware chains on the mux
-	http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port), MiddlewareChain(mux, LoggerMiddleware(s.Co), TimeoutMiddleware(s.Co)))
+	http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port), MiddlewareChain(mux, LoggerMiddleware(s.Co), TimeoutMiddleware(s.Co), AddContextMiddleware("co", s.Co)))
 }
 
 // defineApiRouterV1Endpoints - define a subrouter for the api groupping.

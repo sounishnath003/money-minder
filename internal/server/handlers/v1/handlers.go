@@ -47,6 +47,8 @@ func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Fetching transactions from %s to %s", fromDateParsed.Format("2006-01-02"), toDateParsed.Format("2006-01-02"))
 
+	// co := r.Context().Value("co").(*core.Core)
+
 	jsonResponse(http.StatusOK, w, []models.Transaction{
 		{ID: 1, Name: "Salary", CatagoryID: "cat-001", UserID: 1, Timestamp: time.Now()},
 	})
