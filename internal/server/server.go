@@ -24,7 +24,7 @@ func (s *Server) Start() {
 	// Add the api/v1/* endpoints groups here
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", defineApiRouterV1Endpoints()))
 	// Add the api/v2/* endpoints groups here
-	mux.Handle("/api/v2/", http.StripPrefix("/api/v2", defineApiRouterV1Endpoints()))
+	mux.Handle("/api/v2/", http.StripPrefix("/api/v2", defineApiRouterV2Endpoints()))
 
 	go func() {
 		s.Co.Logger.Printf("server has been started on http://%s:%d", s.Co.Hostname, s.Co.Port)
@@ -36,19 +36,20 @@ func (s *Server) Start() {
 // defineApiRouterV1Endpoints - define a subrouter for the api groupping.
 // Group of /api/v1 routes
 func defineApiRouterV1Endpoints() http.Handler {
-	routeV1 := http.NewServeMux()
+	router := http.NewServeMux()
 	// API /api/v1 route endpoints
-	routeV1.HandleFunc("GET /healthz", v1.HealthHandler)
+	router.HandleFunc("GET /healthz", v1.HealthHandler)
+	router.HandleFunc("GET /transactions", v1.GetTransactionsHandler)
 
-	return routeV1
+	return router
 }
 
 // defineApiRouterV2Endpoints - define a subrouter for the api groupping.
 // Group of /api/v2 routes
 func defineApiRouterV2Endpoints() http.Handler {
-	routeV1 := http.NewServeMux()
+	router := http.NewServeMux()
 	// API /api/v1 route endpoints
-	routeV1.HandleFunc("GET /healthz", v1.HealthHandler)
+	router.HandleFunc("GET /healthz", v1.HealthHandler)
 
-	return routeV1
+	return router
 }
