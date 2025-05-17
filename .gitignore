@@ -1,0 +1,9 @@
+.env
+.prod.config.yaml
+.dev.config.yaml
+
+node_modules
+.log
+.DS_Store
+.secrets
+.vscode
