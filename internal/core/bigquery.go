@@ -14,11 +14,19 @@ type CustomBigQueryClient struct {
 }
 
 func (cbq *CustomBigQueryClient) GetTransactionsByUserId(userId int, fromDate, endDate time.Time) ([]models.Transaction, error) {
-	query := cbq.Client.Query(GET_TRANSACTIONS_BY_USER_ID)
+	query := cbq.Client.Query(QUERY_GET_TRANSACTIONS_BY_USER_ID)
 	query.Parameters = []bigquery.QueryParameter{
 		{
 			Name:  "UserID",
 			Value: userId,
+		},
+		{
+			Name:  "FromDate",
+			Value: fromDate,
+		},
+		{
+			Name:  "EndDate",
+			Value: endDate,
 		},
 	}
 
