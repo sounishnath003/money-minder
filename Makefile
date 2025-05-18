@@ -3,6 +3,7 @@ install:
 	go mod tidy
 	go mod download
 	go mod verify
+	cd web && npm install
 
 .PHONY: build
 build:

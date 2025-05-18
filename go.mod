@@ -5,6 +5,7 @@ go 1.24.3
 require (
 	cloud.google.com/go/bigquery v1.68.0
 	github.com/google/uuid v1.6.0
+	google.golang.org/api v0.233.0
 )
 
 require (
@@ -43,7 +44,6 @@ require (
 	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
-	google.golang.org/api v0.233.0 // indirect
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250428153025-10db94c68c34 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250505200425-f936aa4a68b2 // indirect

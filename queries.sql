@@ -8,7 +8,7 @@
         CreatedAt)
     VALUES
     (
-        1, 'Sounish Nath', 'flock.sinasini@gmail.com', 'Sounish@007', CURRENT_TIMESTAMP()
+        1, 'Sounish Nath', 'flock.sinasini@gmail.com', 'xxxxx', CURRENT_TIMESTAMP()
     );
 
 -- Insert Category
