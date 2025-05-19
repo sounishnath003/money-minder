@@ -1,7 +1,7 @@
 <template>
-    <div class="grid grid-cols-2 gap-4 my-6">
+    <div class="grid grid-rows-2 lg:grid-cols-2 gap-5 my-6">
         <AddTransaction />
-        <Balance />
+        <Balance class="flex flex-col justify-start items-start md:items-center  order-first lg:order-last" />
     </div>
 </template>
 
