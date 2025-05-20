@@ -19,8 +19,25 @@ func AddContextMiddleware(key string, co *core.Core) Middleware {
 
 			// Create a new request with the updated context
 			r = r.WithContext(ctx)
-
 			// Call the next handler
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// AddCorsMiddleware helps to add domain as middleware CORS allowed domain
+func AddCorsMiddleware(domain string) Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", domain)
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
 			next.ServeHTTP(w, r)
 		})
 	}

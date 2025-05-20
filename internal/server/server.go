@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/rs/cors"
+
 	"github.com/sounishnath003/money-minder/internal/core"
 	v1 "github.com/sounishnath003/money-minder/internal/server/handlers/v1"
 )
@@ -29,8 +31,19 @@ func (s *Server) Start() {
 	go func() {
 		s.Co.Logger.Printf("server has been started on http://%s:%d", s.Co.Hostname, s.Co.Port)
 	}()
-	// Enforce middleware chains on the mux
-	http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port), MiddlewareChain(mux, LoggerMiddleware(s.Co), TimeoutMiddleware(s.Co), AddContextMiddleware("co", s.Co)))
+
+	// Enforce middleware chains on the mux with CORS middleware
+	http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port),
+		MiddlewareChain(
+			cors.New(cors.Options{
+				AllowedOrigins: []string{"*"},
+				AllowedMethods: []string{"GET", "POST", "HEAD"},
+				ExposedHeaders: []string{"X-Request-ID", "Authorization", "Content-Type", "Content-Length"},
+				MaxAge:         3600,
+			}).Handler(mux),
+			LoggerMiddleware(s.Co),
+			TimeoutMiddleware(s.Co),
+			AddContextMiddleware("co", s.Co)))
 }
 
 // defineApiRouterV1Endpoints - define a subrouter for the api groupping.

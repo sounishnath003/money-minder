@@ -5,6 +5,7 @@ go 1.24.3
 require (
 	cloud.google.com/go/bigquery v1.68.0
 	github.com/google/uuid v1.6.0
+	github.com/rs/cors v1.11.1
 	google.golang.org/api v0.233.0
 )
 

@@ -35,8 +35,8 @@
                     <input autocomplete="off" v-model="transactionStore.addTransactionForm.amount" type="number"
                         id="amount" :class="formInputCss" placeholder="How much have you spent" required />
                 </div>
-                <div class="text-right"><button type="submit"
-                        class="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add
+                <div class="w-full block"><button type="submit"
+                        class="w-full cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create
                         new
                         transaction</button>
                 </div>
@@ -53,8 +53,7 @@ import { useTransactionStore } from '../store/transaction.store';
 const transactionStore = useTransactionStore();
 
 // formInput box css
-const formInputCss = `.input-box {
-  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus: ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+const formInputCss = `bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus: ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
 }`
 
 // On submit trasaction save request
