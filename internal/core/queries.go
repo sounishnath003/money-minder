@@ -17,7 +17,8 @@ const (
 		AND CreatedAt BETWEEN @FromDate AND @EndDate 
 		AND b.IsActive = true
   	GROUP BY b.Category
-	ORDER BY TotalAmount DESC, Category ASC;`
+	ORDER BY TotalAmount DESC, Category ASC
+	LIMIT 6;`
 
 	QUERY_GET_ACTIVE_CATRGORY = `SELECT 
 	ID, Category FROM sounish-cloud-workstation.money_minder.t_categories

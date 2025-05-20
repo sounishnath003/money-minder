@@ -22,3 +22,8 @@
     (ID,Name,TransactionType,UserID,CategoryID,Amount,CreatedAt)
     VALUES
     (2, 'Mumbai House', 'Expense', 1, 10, 14000, current_timestamp());
+
+
+-- safe delete transactions (tx)
+    DELETE FROM `gcp_project_id.money_minder.t_transactions`
+    WHERE ID > 1747761819147;

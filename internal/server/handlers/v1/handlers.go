@@ -84,6 +84,7 @@ func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 func AddTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	var transaction models.Transaction
 	err := json.NewDecoder(r.Body).Decode(&transaction)
+
 	if err != nil {
 		co := r.Context().Value("co").(*core.Core)
 		co.Logger.Printf("Error parsing transaction request: %v", err)
@@ -103,4 +104,33 @@ func AddTransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	co.Logger.Printf("Successfully added transaction with ID: %d", transaction.ID)
 	jsonResponse(http.StatusOK, w, success)
+}
+
+// SpendByCategoryHandler helps to get the spend by category of a User.
+// Group of aggregation query will be performed
+func GetTotalSpendByCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	fromDate := r.URL.Query().Get("from")
+	toDate := r.URL.Query().Get("to")
+	userID := 1
+
+	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
+	if err != nil {
+		co := r.Context().Value("co").(*core.Core)
+		co.Logger.Printf("Invalid date range: %v", err)
+		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: err.Error(), ErrorMessage: "date range error"})
+		return
+	}
+
+	co := r.Context().Value("co").(*core.Core)
+	co.Logger.Printf("Fetching transactions from %s to %s", fromDateParsed.Format("2006-01-02"), toDateParsed.Format("2006-01-02"))
+
+	out, err := co.BQClient.GetTotalSpendsByCategories(userID, fromDateParsed, toDateParsed)
+	if err != nil {
+		co.Logger.Printf("Error fetching transactions: %v", err)
+		jsonResponse(http.StatusInternalServerError, w, ErrorResponse{Error: err.Error(), ErrorMessage: "unable to fetch transactions"})
+		return
+	}
+
+	co.Logger.Printf("Successfully fetched %d transactions for userID: %d", len(out), userID)
+	jsonResponse(http.StatusOK, w, out)
 }

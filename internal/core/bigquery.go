@@ -82,6 +82,54 @@ func (cbq *CustomBigQueryClient) GetActiveCategories() ([]models.Category, error
 	return categories, nil
 }
 
+// SpendByCateogory helps to store the category spend by every item tx.
+type SpendByCateogory struct {
+	Category    string `json:"category"`
+	TotalAmount int    `json:"totalAmount"`
+}
+
+// GetTotalSpendsByCategories helps to get the group by aggregation of
+// the user's ID fromDate to EndDate total spend by category.
+func (cbq *CustomBigQueryClient) GetTotalSpendsByCategories(userId int, fromDate, endDate time.Time) ([]SpendByCateogory, error) {
+	query := cbq.Query(QUERY_GET_TRANSACTION_SPEND_BY_CATEGORY)
+	query.Parameters = []bigquery.QueryParameter{
+		{
+			Name:  "UserID",
+			Value: userId,
+		},
+		{
+			Name:  "FromDate",
+			Value: fromDate,
+		},
+		{
+			Name:  "EndDate",
+			Value: endDate,
+		},
+	}
+
+	it, err := query.Read(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var results []SpendByCateogory
+
+	for {
+		var spend SpendByCateogory
+		err := it.Next(&spend)
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, spend)
+	}
+
+	return results, nil
+}
+
 // AddTransaction - helps to add a transaction for a user ID
 func (cbq *CustomBigQueryClient) AddTransaction(transaction models.Transaction) (bool, error) {
 	// @ID, @Name, @TransactionType, @UserID, @CategoryID, @Amount, @CreatedAt

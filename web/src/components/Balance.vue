@@ -1,7 +1,7 @@
 <template>
-    <div class="gap-8 rounded-md p-2">
+    <div class="gap-8 rounded-md">
         <div>
-            <h2 class="font-medium text-xl">Total Balance</h2>
+            <h2 class="font-medium text-xl text-blue-600 dark:text-white">&bull; Total Balance</h2>
         </div>
         <div>
             <span class="font-bold cursor-pointer text-2xl md:text-4xl p-2"
@@ -14,6 +14,7 @@
                     {{ tx.amount }}</span>
             </div>
         </div>
+        <SpendByCategory :spendByCategories="spendByCategories" />
     </div>
 </template>
 
@@ -21,16 +22,19 @@
 import { computed, onMounted, ref } from 'vue';
 import { useTransactionStore } from '../store/transaction.store';
 
+import SpendByCategory from './SpendByCategory.vue';
+
 const transactionStore = useTransactionStore();
 
 const transactions = ref([]);
+const spendByCategories = ref([]);
 
 const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 2);
 const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
 // On component mount fetch all transactions
 onMounted(async () => {
-    Promise.all([fetchTransactions(), fetchCategories()]).then((val) => console.log(val)).catch(err => window.alert(JSON.stringify(err)))
+    Promise.all([fetchTransactions(), allSpendByCategories()]).then((val) => console.log(val)).catch(err => console.error(err))
 })
 
 // Computed properties
@@ -63,8 +67,8 @@ async function fetchTransactions() {
     transactions.value = await transactionStore.getTransactions(startDate, endDate);
 }
 
-async function fetchCategories() {
-    categories.value = await transactionStore.getAllCategories();
+async function allSpendByCategories() {
+    spendByCategories.value = await transactionStore.getAllSpendsByCategories(startDate, endDate);
 }
 
 // Utilities

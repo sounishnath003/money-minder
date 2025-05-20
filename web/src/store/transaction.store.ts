@@ -61,13 +61,48 @@ export const useTransactionStore = defineStore('transactionState', {
                 throw error;
             }
         },
+        async getAllSpendsByCategories(fromDate: Date, toDate: Date): Promise<{ category: string, totalAmount: number }[]> {
+            const fromDateStr = fromDate.toISOString().slice(0, 10);
+            const toDateStr = toDate.toISOString().slice(0, 10);
+
+            const url = new URL(`${API_BASE_URL}/api/v1/transactions/spendByCategory`);
+            url.searchParams.append('from', fromDateStr);
+            url.searchParams.append('to', toDateStr);
+
+            const resp = await window.fetch(url.toString(), {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            return data.data as { category: string, totalAmount: number }[];
+        },
         async createTransaction() {
-            console.table({
+            const newTransaction = {
+                id: Date.now(),
+                userID: 1,
                 name: this.addTransactionForm.name,
                 transactionType: this.addTransactionForm.transactionType,
-                categoryID: this.addTransactionForm.categoryID,
-                amount: this.addTransactionForm.amount
+                categoryID: +this.addTransactionForm.categoryID,
+                amount: this.addTransactionForm.amount,
+                createdAt: new Date()
+            };
+
+            const resp = await window.fetch(`${API_BASE_URL}/api/v1/transactions`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newTransaction)
             });
+            if (resp.status !== 200) throw new Error(JSON.stringify(await resp.json()))
+
             console.log('transaction saved.');
             this.resetTransactionForm();
         },
