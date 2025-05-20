@@ -6,7 +6,7 @@ type Transaction struct {
 	ID              int    `json:"id"`
 	Name            string `json:"name"`
 	TransactionType string `json:"transactionType"`
-	CategoryID      int    `json:"catagoryID"`
+	CategoryID      int    `json:"categoryID"`
 	Amount          int    `json:"amount"`
 
 	UserID    int       `json:"userID"`
