@@ -7,4 +7,4 @@ It is personal finance expense tracker and money minder service. Which can be se
 
 ## Frontend (Vue) -
 
-![home-dark](assets/home-dark.png)
+![home-light](assets/home-light.png)
