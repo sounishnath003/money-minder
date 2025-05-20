@@ -24,9 +24,8 @@
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category:</label>
                     <select v-model="transactionStore.addTransactionForm.categoryID" name="categoryID" id="categoryID"
                         :class="formInputCss">
-                        <option value="Select category">Select category</option>
-                        <option value="Foods & Beverages">Foods & Beverages</option>
-                        <option value="Salary">Salary</option>
+                        <option v-for="category in categories" :id="category.id" :value="category.id">{{
+                            category.category }}</option>
                     </select>
                 </div>
                 <div class="mb-5">
@@ -46,15 +45,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useTransactionStore } from '../store/transaction.store';
 
 // define the store
 const transactionStore = useTransactionStore();
 
+// define categories list
+const categories = ref([]);
+
 // formInput box css
-const formInputCss = `bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus: ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
-}`
+const formInputCss = `bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus: ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`
+
+// On component mount fetch all transactions
+onMounted(async () => {
+    await fetchCategories();
+})
+
+// fetch all categories
+async function fetchCategories() {
+    categories.value = await transactionStore.getAllCategories();
+}
+
 
 // On submit trasaction save request
 const onSubmit = async () => {

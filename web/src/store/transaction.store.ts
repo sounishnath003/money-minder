@@ -19,11 +19,21 @@ export const useTransactionStore = defineStore('transactionState', {
         addTransactionForm: {
             name: ref(''),
             transactionType: ref('Select transaction type'),
-            categoryID: ref('Select category'),
+            categoryID: ref(0),
             amount: ref(0)
         },
     }),
     actions: {
+        async getAllCategories() {
+            const resp = await window.fetch(`${API_BASE_URL}/api/v1/categories`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await resp.json();
+            return data.data as { id: number; category: string; }[];
+        },
         async getTransactions(fromDate: Date, toDate: Date): Promise<Transaction[]> {
             try {
                 const fromDateStr = fromDate.toISOString().slice(0, 10);
@@ -64,7 +74,7 @@ export const useTransactionStore = defineStore('transactionState', {
         resetTransactionForm() {
             this.addTransactionForm.name = '';
             this.addTransactionForm.transactionType = 'Select transaction type';
-            this.addTransactionForm.categoryID = 'Select category';
+            this.addTransactionForm.categoryID = 0;
             this.addTransactionForm.amount = 0;
         }
     },

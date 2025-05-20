@@ -24,11 +24,14 @@ import { useTransactionStore } from '../store/transaction.store';
 const transactionStore = useTransactionStore();
 
 const transactions = ref([]);
+
 const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 2);
 const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
 // On component mount fetch all transactions
-onMounted(fetchTransactions)
+onMounted(async () => {
+    Promise.all([fetchTransactions(), fetchCategories()]).then((val) => console.log(val)).catch(err => window.alert(JSON.stringify(err)))
+})
 
 // Computed properties
 const balance = computed(() => transactions.value.map((trans, index) => trans.transactionType === 'Income' ? trans.amount : -trans.amount).reduce((acc, curr) => acc + curr, 0).toFixed(2))
@@ -58,6 +61,10 @@ const spendByTransactionTypes = computed(() => {
 // Fetch transactions
 async function fetchTransactions() {
     transactions.value = await transactionStore.getTransactions(startDate, endDate);
+}
+
+async function fetchCategories() {
+    categories.value = await transactionStore.getAllCategories();
 }
 
 // Utilities
