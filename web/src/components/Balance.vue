@@ -10,7 +10,7 @@
         <div class="grid grid-cols-2 gap-5">
             <div class="text-md md:text-xl font-medium" v-for="tx in spendByTransactionTypes" :id="tx.transactionType">
                 {{ tx.transactionType }}&colon; <span class="font-semibold"
-                    :class="tx.transactionType === 'Income' ? 'text-green-700' : 'text-red-700'">
+                    :class="tx.transactionType === 'Income' ? 'text-green-600' : 'text-red-600'">
                     {{ tx.amount }}</span>
             </div>
         </div>

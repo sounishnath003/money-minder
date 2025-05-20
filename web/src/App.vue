@@ -5,6 +5,9 @@
     <main class="container">
       <RouterView />
     </main>
+    <footer class="font-medium">
+      🚧 work is in progress
+    </footer>
   </div>
 </template>
 
