@@ -37,7 +37,7 @@ build-all: build-backend build-frontend
 
 
 .PHONY: deploy-all
-deploy-all:
+deploy-all: build-all
 	gcloud run deploy moneyminder \
 	--image=$(DockerImageName):$$(git rev-parse --short HEAD) \
 	--allow-unauthenticated \

@@ -20,6 +20,7 @@ COPY web/package-lock.json .
 RUN npm install
 
 COPY web/ .
+
 RUN npm run build
 
 # -- And finally, build the final image
