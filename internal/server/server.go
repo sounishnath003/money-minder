@@ -32,6 +32,12 @@ func (s *Server) Start() {
 		s.Co.Logger.Printf("server has been started on http://%s:%d", s.Co.Hostname, s.Co.Port)
 	}()
 
+	// Serve static files from the dist directory
+	fs := http.FileServer(http.Dir("./web/dist/"))
+
+	// Handle all routes by serving index.html for client-side routing
+	mux.Handle("/", fs)
+
 	// Enforce middleware chains on the mux with CORS middleware
 	http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port),
 		MiddlewareChain(

@@ -1,3 +1,5 @@
+DockerImageName=asia-south1-docker.pkg.dev/sounish-cloud-workstation/sounish-cloud-workstation/moneyminder
+
 .PHONY: install
 install:
 	go mod tidy
@@ -18,3 +20,28 @@ run-backend: build-backend
 .PHONY: frontend-run-dev
 frontend-run-dev:
 	cd web && npm run dev
+
+.PHONY: build-frontend
+build-frontend:
+	cd web && npm run build
+
+.PHONY: build-all
+build-all: build-backend build-frontend
+	docker images
+	echo "Removing old images"
+	echo "Building image"
+	docker build -t $(DockerImageName):$$(git rev-parse --short HEAD) -f Dockerfile .
+	echo "Pushing to GCP"
+	gcloud auth configure-docker asia-south1-docker.pkg.dev
+	docker push $(DockerImageName):$$(git rev-parse --short HEAD)
+
+
+.PHONY: deploy-all
+deploy-all:
+	gcloud run deploy moneyminder \
+	--image=$(DockerImageName):$$(git rev-parse --short HEAD) \
+	--allow-unauthenticated \
+	--port=3000 \
+	--service-account=797087556919-compute@developer.gserviceaccount.com \
+	--max-instances=5 \
+	--region=asia-south1
