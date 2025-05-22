@@ -35,9 +35,10 @@
                         id="amount" :class="formInputCss" placeholder="How much have you spent" required />
                 </div>
                 <div class="w-full block"><button type="submit"
-                        class="w-full cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create
-                        new
-                        transaction</button>
+                        :disabled="transactionStore.addTransactionForm.amount <= 0"
+                        class="w-full cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                        ref="submitBtn">{{
+                            submitBtnText }}</button>
                 </div>
             </form>
         </div>
@@ -45,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useTransactionStore } from '../store/transaction.store';
 
 // define the store
@@ -53,6 +54,17 @@ const transactionStore = useTransactionStore();
 
 // define categories list
 const categories = ref([]);
+const submitBtnText = ref('Create new transaction');
+const submitBtn = ref(null);
+
+// watch the submitBtn
+watch(submitBtn, (newVal) => {
+    if (newVal) {
+        newVal.disabled = true;
+    } else {
+        newVal.disabled = false;
+    }
+})
 
 // formInput box css
 const formInputCss = `bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus: ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`
@@ -70,6 +82,11 @@ async function fetchCategories() {
 
 // On submit trasaction save request
 const onSubmit = async () => {
+    submitBtnText.value = 'Creating...';
+    // also make the button disabled
+    submitBtn.value.disabled = true;
     await transactionStore.createTransaction();
+    submitBtnText.value = 'Create new transaction';
+    submitBtn.value.disabled = false;
 }
 </script>
