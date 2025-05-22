@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col gap-4">
-        <div class="text-xl md:text-3xl font-medium">Add new transaction</div>
+        <div>
+            <h2 class="font-medium text-xl lg:text-3xl text-blue-600 dark:text-white">&bull; Add new transaction</h2>
+        </div>
         <div>
             <form id="addTransactionForm" @submit.prevent="onSubmit">
                 <div class="mb-5">
