@@ -14,7 +14,7 @@
                     {{ tx.amount }}</span>
             </div>
         </div>
-        <SpendByCategory :spendByCategories="spendByCategories" />
+        <SpendByCategory />
     </div>
 </template>
 
@@ -26,15 +26,10 @@ import SpendByCategory from './SpendByCategory.vue';
 
 const transactionStore = useTransactionStore();
 
-const transactions = ref([]);
-const spendByCategories = ref([]);
-
-const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 2);
-const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-
+const transactions = computed(() => transactionStore.allTransactions);
 // On component mount fetch all transactions
 onMounted(async () => {
-    Promise.all([fetchTransactions(), allSpendByCategories()]).then((val) => console.log(val)).catch(err => console.error(err))
+    await transactionStore.getTransactions();
 })
 
 // Computed properties
@@ -61,15 +56,6 @@ const spendByTransactionTypes = computed(() => {
         { transactionType: "Expense", amount: INRRuppe.format(summary.Expense), sign: '-' },
     ]
 });
-
-// Fetch transactions
-async function fetchTransactions() {
-    transactions.value = await transactionStore.getTransactions(startDate, endDate);
-}
-
-async function allSpendByCategories() {
-    spendByCategories.value = await transactionStore.getAllSpendsByCategories(startDate, endDate);
-}
 
 // Utilities
 const USDollar = new Intl.NumberFormat('en-US', {

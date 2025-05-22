@@ -33,12 +33,12 @@
 </template>
 
 <script setup>
-const props = defineProps({
-    spendByCategories: {
-        required: true,
-        default: [],
-    }
-});
+import { useTransactionStore } from '../store/transaction.store';
+import { computed } from 'vue';
+
+const transactionStore = useTransactionStore();
+
+const spendByCategories = computed(() => transactionStore.allSpendsByCategories);
 
 
 // Utilities

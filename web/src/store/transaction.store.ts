@@ -16,12 +16,16 @@ export interface Transaction {
 
 export const useTransactionStore = defineStore('transactionState', {
     state: () => ({
+        startDate: ref(new Date(new Date().getFullYear(), new Date().getMonth(), 2)),
+        endDate: ref(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
         addTransactionForm: {
             name: ref(''),
             transactionType: ref('Select transaction type'),
             categoryID: ref(0),
             amount: ref(0)
         },
+        allTransactions: ref<Transaction[]>([]),
+        allSpendsByCategories: ref<{ category: string, totalAmount: number }[]>([]),
     }),
     actions: {
         async getAllCategories() {
@@ -34,10 +38,10 @@ export const useTransactionStore = defineStore('transactionState', {
             const data = await resp.json();
             return data.data as { id: number; category: string; }[];
         },
-        async getTransactions(fromDate: Date, toDate: Date): Promise<Transaction[]> {
+        async getTransactions(): Promise<Transaction[]> {
             try {
-                const fromDateStr = fromDate.toISOString().slice(0, 10);
-                const toDateStr = toDate.toISOString().slice(0, 10);
+                const fromDateStr = this.startDate.toISOString().slice(0, 10);
+                const toDateStr = this.endDate.toISOString().slice(0, 10);
 
                 const url = new URL(`${API_BASE_URL}/api/v1/transactions`);
                 url.searchParams.append('from', fromDateStr);
@@ -55,15 +59,18 @@ export const useTransactionStore = defineStore('transactionState', {
                 }
 
                 const data = await resp.json();
+                this.allTransactions = data.data as Transaction[];
+                // Update spend by categories
+                await this.getAllSpendsByCategories();
                 return data.data as Transaction[];
             } catch (error) {
                 console.error('Failed to fetch transactions:', error);
                 throw error;
             }
         },
-        async getAllSpendsByCategories(fromDate: Date, toDate: Date): Promise<{ category: string, totalAmount: number }[]> {
-            const fromDateStr = fromDate.toISOString().slice(0, 10);
-            const toDateStr = toDate.toISOString().slice(0, 10);
+        async getAllSpendsByCategories(): Promise<{ category: string, totalAmount: number }[]> {
+            const fromDateStr = this.startDate.toISOString().slice(0, 10);
+            const toDateStr = this.endDate.toISOString().slice(0, 10);
 
             const url = new URL(`${API_BASE_URL}/api/v1/transactions/spendByCategory`);
             url.searchParams.append('from', fromDateStr);
@@ -81,6 +88,7 @@ export const useTransactionStore = defineStore('transactionState', {
             }
 
             const data = await resp.json();
+            this.allSpendsByCategories = data.data as { category: string, totalAmount: number }[];
             return data.data as { category: string, totalAmount: number }[];
         },
         async createTransaction() {
@@ -102,9 +110,15 @@ export const useTransactionStore = defineStore('transactionState', {
                 body: JSON.stringify(newTransaction)
             });
             if (resp.status !== 200) throw new Error(JSON.stringify(await resp.json()))
-
             console.log('transaction saved.');
             this.resetTransactionForm();
+
+            // Update the transactions and spends by categories
+            Promise.all([this.getTransactions(), this.getAllSpendsByCategories()]).then(() => {
+                console.log('transactions and spends by categories updated.');
+            }).catch((error) => {
+                console.error('Failed to update transactions and spends by categories:', error);
+            });
         },
         resetTransactionForm() {
             this.addTransactionForm.name = '';
