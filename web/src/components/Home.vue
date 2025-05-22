@@ -4,7 +4,7 @@
             <AddTransaction />
             <Balance class="flex flex-col justify-start items-center order-first lg:order-last" />
         </div>
-        <ListTransactions class="my-20" />
+        <ListTransactions />
     </div>
     <PasswordProtect v-else @inputPasswordEvent="updateInputPassword" />
 </template>
