@@ -2,7 +2,7 @@
   <div class="h-1 bg-blue-600"></div>
   <div class="flex flex-col gap-5 p-4 rounded-lg dark:bg-gray-900 bg-neutral-50 min-h-screen">
     <Header />
-    <main class="container">
+    <main class="container mx-auto">
       <RouterView />
     </main>
     <footer class="font-medium">

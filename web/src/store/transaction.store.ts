@@ -26,6 +26,7 @@ export const useTransactionStore = defineStore('transactionState', {
         },
         allTransactions: ref<Transaction[]>([]),
         allSpendsByCategories: ref<{ category: string, totalAmount: number }[]>([]),
+        allCategories: ref<{ id: number; category: string; }[]>([]),
     }),
     actions: {
         async getAllCategories() {
@@ -36,7 +37,8 @@ export const useTransactionStore = defineStore('transactionState', {
                 },
             });
             const data = await resp.json();
-            return data.data as { id: number; category: string; }[];
+            this.allCategories = data.data as { id: number; category: string; }[];
+            return this.allCategories;
         },
         async getTransactions(): Promise<Transaction[]> {
             try {
