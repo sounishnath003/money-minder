@@ -1,6 +1,6 @@
 <template>
     <div class="text-center">
-        <div class="text-xl text-blue-700 dark:text-gray-200 font-semibold">&bull; Spend By Categories (MoM)
+        <div class="text-xl text-blue-700 dark:text-gray-200 font-semibold">&bull; Spend By Categories (Month on Month)
         </div>
         <div class="text-sm">Your spend by categories month-on-month. Keep an eye on your expenditures.</div>
     </div>

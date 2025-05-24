@@ -9,20 +9,46 @@
             </div>
         </div>
         <div id="chart">
-            <apexchart type="pie" width="380" :options="chartOptions" :series="series"></apexchart>
+            <div v-if="!series?.length || !allLabels?.length" class="flex justify-center items-center h-[350px]">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+            <apexchart v-else type="pie" width="480" :options="chartOptions" :series="series"></apexchart>
         </div>
     </div>
 </template>
 
 <script setup>
+import { computed, onMounted } from 'vue';
+import { useTransactionStore } from '../../store/transaction.store';
 
-const series = [44, 55, 13, 43, 22];
-const chartOptions = {
+const transactionStore = useTransactionStore();
+
+// Fetch data on component mount
+onMounted(async () => {
+    await transactionStore.getAllSpendsByCategories();
+});
+
+const series = computed(() => transactionStore.allSpendsByCategories.map(val => val.totalAmount));
+const allLabels = computed(() => transactionStore.allSpendsByCategories.map((val) => val.category));
+
+const chartOptions = computed(() => ({
     chart: {
         width: 480,
         type: 'pie',
+        toolbar: {
+            show: true,
+            tools: {
+                download: true,
+                selection: true,
+                zoom: true,
+                zoomin: true,
+                zoomout: true,
+                pan: true,
+                reset: true
+            }
+        }
     },
-    labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+    labels: allLabels.value,
     responsive: [{
         breakpoint: 480,
         options: {
@@ -33,6 +59,19 @@ const chartOptions = {
                 position: 'bottom'
             }
         }
-    }]
-};
+    }],
+    tooltip: {
+        y: {
+            formatter: function (val) {
+                return INRRuppe.format(val);
+            }
+        }
+    }
+}));
+
+// Utilities
+const INRRuppe = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+});
 </script>

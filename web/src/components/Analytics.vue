@@ -9,12 +9,12 @@
         Loading...
     </div>
     <div v-else class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
-        <div class="flex flex-row justify-between w-full">
-            <div class="w-1/2">
+        <div class="flex flex-col gap-4 lg:flex-row justify-between items-center w-full">
+            <div class="w-">
                 <BarChart :categories="spendOnCategoriesMonthOnMonth.months"
                     :series="spendOnCategoriesMonthOnMonth.series" />
             </div>
-            <div class="w-1/2">
+            <div class="w-">
                 <PieChart />
             </div>
         </div>
