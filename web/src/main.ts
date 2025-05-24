@@ -4,7 +4,7 @@ import App from './App.vue'
 import { router } from './router'
 import { createPinia } from 'pinia'
 
-import VueApexCharts from "vue3-apexcharts";
+import VueApexCharts from 'vue3-apexcharts';
 
 const app = createApp(App)
 // Register a central store for the vue application
