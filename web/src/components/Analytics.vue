@@ -1,5 +1,5 @@
 <template>
-    <div class="text-2xl font-medium">Understand your spends with <b>Insights</b></div>
+    <div class="text-2xl font-medium my-1 lg:text-left text-center">Understand spends with <b>Simple Analytics</b></div>
     <div class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
         <LineChart name="asd" :data="dates" height="350" width="500" xtext="Timeline" ytext="Stock" />
         <BarChart />

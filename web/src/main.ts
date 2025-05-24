@@ -12,6 +12,7 @@ app.use(createPinia());
 // Register the routes into the application
 app.use(router);
 // Define the apex charts into the vue components
-app.use(VueApexCharts);
+// app.use(VueApexCharts);
+app.component('apexchart', VueApexCharts)
 // Mount the application with the DOM #id
 app.mount('#app');
