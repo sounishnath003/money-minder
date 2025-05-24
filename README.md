@@ -14,6 +14,14 @@ Money Minder is a personal finance management application that helps users track
 - Vue Router for navigation
 - Chart.js or D3.js for Charts (TODO)
 
+## Frontend (Vue) -
+
+### Password Protect Site:
+![pass-protect](assets/pass-protect.png)
+
+### Home view:
+![home-light](assets/home-light.png)
+
 ### Backend
 - Golang (net/http) server
 - Native and handwritten middlewares
@@ -26,22 +34,21 @@ Money Minder is a personal finance management application that helps users track
   - BigQuery for analytics and reporting
   - Cloud Monitoring for observability
 
+  ### All transactions:
+![home-light](assets/transactions.png)
+
 ### Data Analytics
 - BigQuery for financial data analysis
 - Custom SQL queries for transaction insights
 - Data visualization using BigQuery ML
 - Automated reporting and trend analysis
 
-## Frontend (Vue) -
 
-### Password Protect Site:
-![pass-protect](assets/pass-protect.png)
+### Analytics Section - 1:
+![home-light](assets/analytics-1.png)
 
-### Home view:
-![home-light](assets/home-light.png)
-
-### All transactions:
-![home-light](assets/transactions.png)
+### Analytics Section - 2:
+![home-light](assets/analytics-2.png)
 
 ### Author Information
 - **Name:** Sounish Nath
