@@ -6,7 +6,10 @@
     </div>
 
     <div id="chart" class="w-full">
-        <apexchart type="area" :height="props.height" :options="chartOptions" :series="series"></apexchart>
+        <div v-if="!props.data?.length" class="flex justify-center items-center" :style="{ height: props.height }">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+        <apexchart v-else type="area" :height="props.height" :options="chartOptions" :series="series"></apexchart>
     </div>
 </template>
 

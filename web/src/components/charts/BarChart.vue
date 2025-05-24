@@ -5,7 +5,11 @@
         <div class="text-sm">Your spend by categories month-on-month. Keep an eye on your expenditures.</div>
     </div>
     <div id="chart" class="w-full">
-        <apexchart type="bar" height="350" :options="chartOptions" :series="props.series"></apexchart>
+        <div v-if="!props.categories?.length || !props.series?.length"
+            class="flex justify-center items-center h-[350px]">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+        <apexchart v-else type="bar" height="350" :options="chartOptions" :series="props.series"></apexchart>
     </div>
 </template>
 

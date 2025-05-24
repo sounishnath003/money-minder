@@ -3,18 +3,25 @@
         <div>
             <h2 class="font-medium text-xl text-blue-600 dark:text-white">&bull; Total Balance</h2>
         </div>
-        <div>
-            <span class="font-bold cursor-pointer text-2xl md:text-4xl p-2"
-                :class="determineSign == '+' ? 'text-green-600' : 'text-red-600'"> {{ INRRuppe.format(balance) }}</span>
+        <div v-if="isLoading" class="text-center my-auto font-medium py-4">
+            Loading...
         </div>
-        <div class="grid grid-cols-2 gap-5">
-            <div class="text-md md:text-xl font-medium" v-for="tx in spendByTransactionTypes" :id="tx.transactionType">
-                {{ tx.transactionType }}&colon; <span class="font-semibold"
-                    :class="tx.transactionType === 'Income' ? 'text-green-600' : 'text-red-600'">
-                    {{ tx.amount }}</span>
+        <template v-else>
+            <div>
+                <span class="font-bold cursor-pointer text-2xl md:text-4xl p-2"
+                    :class="determineSign == '+' ? 'text-green-600' : 'text-red-600'"> {{ INRRuppe.format(balance)
+                    }}</span>
             </div>
-        </div>
-        <SpendByCategory />
+            <div class="grid grid-cols-2 gap-5">
+                <div class="text-md md:text-xl font-medium" v-for="tx in spendByTransactionTypes"
+                    :id="tx.transactionType">
+                    {{ tx.transactionType }}&colon; <span class="font-semibold"
+                        :class="tx.transactionType === 'Income' ? 'text-green-600' : 'text-red-600'">
+                        {{ tx.amount }}</span>
+                </div>
+            </div>
+            <SpendByCategory />
+        </template>
     </div>
 </template>
 
@@ -25,11 +32,19 @@ import { useTransactionStore } from '../store/transaction.store';
 import SpendByCategory from './SpendByCategory.vue';
 
 const transactionStore = useTransactionStore();
+const isLoading = ref(true);
 
 const transactions = computed(() => transactionStore.allTransactions);
+
 // On component mount fetch all transactions
 onMounted(async () => {
-    await transactionStore.getTransactions();
+    try {
+        await transactionStore.getTransactions();
+    } catch (error) {
+        console.error('Failed to load transactions:', error);
+    } finally {
+        isLoading.value = false;
+    }
 })
 
 // Computed properties

@@ -2,7 +2,10 @@
     <div class="text-2xl font-medium mb-3 lg:text-left text-center">
         <b class="text-blue-600">Analytics &amp; Insights: </b>Understand your spends
     </div>
-    <div class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
+    <div v-if="isLoading" class="flex justify-center items-center h-[350px] font-medium">
+        Loading...
+    </div>
+    <div v-else class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
         <LineChart name="Total spend" :data="dailyTotalSpends" height="350" width="500" xtext="Timeline"
             ytext="Stock" />
         <BarChart :categories="spendOnCategoriesMonthOnMonth.months" :series="spendOnCategoriesMonthOnMonth.series" />
@@ -18,17 +21,28 @@ import { useTransactionStore } from '../store/transaction.store';
 // Define store
 const transactionStore = useTransactionStore();
 
+// Loading states
+const isLoading = ref(true);
+
 // On Mount
 onMounted(async () => {
-    Promise.all([
-        transactionStore.getDailyTotalSpendByTimeframe(),
-        transactionStore.getSpendOnCategoriesMonthOnMonth()
-    ]).then()
-})
-
+    try {
+        await Promise.all([
+            transactionStore.getDailyTotalSpendByTimeframe(),
+            transactionStore.getSpendOnCategoriesMonthOnMonth()
+        ]);
+    } catch (error) {
+        console.error('Failed to load analytics data:', error);
+    } finally {
+        isLoading.value = false;
+    }
+});
 
 // ref
-const dailyTotalSpends = computed(() => transactionStore.totalDailySpends.reduce((prev, curr) => [...prev, [curr.unixMiliseconds, curr.amount]], []));
+const dailyTotalSpends = computed(() => {
+    if (!transactionStore.totalDailySpends?.length) return [];
+    return transactionStore.totalDailySpends.map(curr => [curr.unixMiliseconds, curr.amount]);
+});
 
 /**
 ```
@@ -45,11 +59,15 @@ const dailyTotalSpends = computed(() => transactionStore.totalDailySpends.reduce
 ```
  */
 const spendOnCategoriesMonthOnMonth = computed(() => {
+    if (!transactionStore.spendOnCategoriesMonthOnMonth?.length) {
+        return { months: [], series: [] };
+    }
+
     // Get unique months for X-axis
-    const months = [...new Set(transactionStore.spendOnCategoriesMonthOnMonth.values().map(item => item.month))];
+    const months = [...new Set(transactionStore.spendOnCategoriesMonthOnMonth.map(item => item.month))];
 
     // Group data by category
-    const groupedByCategory = transactionStore.spendOnCategoriesMonthOnMonth.values().reduce((acc, curr) => {
+    const groupedByCategory = transactionStore.spendOnCategoriesMonthOnMonth.reduce((acc, curr) => {
         if (!acc[curr.category]) {
             acc[curr.category] = {
                 name: curr.category,

@@ -39,7 +39,8 @@ const (
 	ANALYTICS_SPENDS_ON_CATEGORIES_MONTH_ON_MONTH = `WITH a AS (
 	SELECT CreatedAt, CategoryID, Amount FROM sounish-cloud-workstation.money_minder.t_transactions
 	WHERE UserID=@UserID AND CreatedAt BETWEEN @FromDate AND @EndDate)
-	SELECT FORMAT_DATE("%m%Y", a.CreatedAt) AS Seq, FORMAT_DATE("%b-%Y", a.CreatedAt) AS Month, b.Category AS Category, SUM(a.Amount) AS TotalSpendAmount
+	SELECT FORMAT_DATE("%m%Y", a.CreatedAt) AS Seq, FORMAT_DATE("%b-%Y", a.CreatedAt) AS Month, 
+	b.Category AS Category, SUM(a.Amount) AS TotalSpendAmount
 	FROM a JOIN sounish-cloud-workstation.money_minder.t_categories AS b 
 	ON a.CategoryID = b.ID WHERE b.IsActive = true 
 	GROUP BY Seq, Month, Category 
