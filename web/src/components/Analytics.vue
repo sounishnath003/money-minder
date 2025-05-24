@@ -1,12 +1,14 @@
 <template>
-    <div class="text-3xl">Analytics Section</div>
-
-    <div id="chart">
-        <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart>
+    <div class="text-2xl font-medium">Understand your spends with <b>Insights</b></div>
+    <div class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
+        <LineChart name="asd" :data="dates" height="350" width="500" xtext="Timeline" ytext="Stock" />
+        <BarChart />
     </div>
 </template>
 
 <script setup>
+import BarChart from './charts/BarChart.vue';
+import LineChart from './charts/LineChart.vue';
 
 const dates = [
     [1716537600000, 10],
@@ -17,67 +19,5 @@ const dates = [
     [1716969600000, 60],
     [1717056000000, 70],
 ]
-const series = [{
-    name: 'XYZ MOTORS',
-    data: dates
-}];
-
-
-const chartOptions = {
-    chart: {
-        type: 'area',
-        stacked: false,
-        height: 350,
-        zoom: {
-            type: 'x',
-            enabled: true,
-            autoScaleYaxis: true
-        },
-        toolbar: {
-            autoSelected: 'zoom'
-        }
-    },
-    dataLabels: {
-        enabled: false
-    },
-    markers: {
-        size: 0,
-    },
-    title: {
-        text: 'Stock Price Movement',
-        align: 'left'
-    },
-    fill: {
-        type: 'gradient',
-        gradient: {
-            shadeIntensity: 1,
-            inverseColors: false,
-            opacityFrom: 0.5,
-            opacityTo: 0,
-            stops: [0, 90, 100]
-        },
-    },
-    yaxis: {
-        labels: {
-            formatter: function (val) {
-                return val.toFixed(0); // (val / 1000000).toFixed(0);
-            },
-        },
-        title: {
-            text: 'Price'
-        },
-    },
-    xaxis: {
-        type: 'datetime',
-    },
-    tooltip: {
-        shared: false,
-        y: {
-            formatter: function (val) {
-                return (val / 1000000).toFixed(0)
-            }
-        }
-    }
-};
 
 </script>
