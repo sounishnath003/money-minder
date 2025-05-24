@@ -62,6 +62,9 @@ func defineApiRouterV1Endpoints() http.Handler {
 	router.HandleFunc("GET /transactions", v1.GetTransactionsHandler)
 	router.HandleFunc("POST /transactions", v1.AddTransactionHandler)
 	router.HandleFunc("GET /transactions/spendByCategory", v1.GetTotalSpendByCategoryHandler)
+	// Analytics endpoints
+	router.HandleFunc("GET /analytics/getDailySpendByTimeframe", v1.GetDailyTotalSpendByTimeframeHandler)
+	router.HandleFunc("GET /analytics/getSpendOnCategoriesMonthOnMonth", v1.GetSpendOnCategoriesMonthOnMonthHandler)
 
 	return router
 }

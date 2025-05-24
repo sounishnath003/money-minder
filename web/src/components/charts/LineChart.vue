@@ -66,7 +66,7 @@ const chartOptions = {
     },
     title: {
         text: props.xtext,
-        align: 'left'
+        align: 'right'
     },
     fill: {
         type: 'gradient',
@@ -81,7 +81,7 @@ const chartOptions = {
     yaxis: {
         labels: {
             formatter: function (val) {
-                return val.toFixed(0);
+                return (val).toFixed(0);
             },
         },
         title: {
@@ -95,7 +95,7 @@ const chartOptions = {
         shared: false,
         y: {
             formatter: function (val) {
-                return val.toFixed(0)
+                return (val).toFixed(0)
             }
         }
     }

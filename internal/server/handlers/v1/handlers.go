@@ -134,3 +134,60 @@ func GetTotalSpendByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	co.Logger.Printf("Successfully fetched %d transactions for userID: %d", len(out), userID)
 	jsonResponse(http.StatusOK, w, out)
 }
+
+// GetDailyTotalSpendByTimeframeHandler helps to find the analytical handler which
+// helps to get the daily total spend (incl. any category)
+func GetDailyTotalSpendByTimeframeHandler(w http.ResponseWriter, r *http.Request) {
+	fromDate := r.URL.Query().Get("from")
+	toDate := r.URL.Query().Get("to")
+	userID := 1
+
+	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
+	if err != nil {
+		co := r.Context().Value("co").(*core.Core)
+		co.Logger.Printf("Invalid date range: %v", err)
+		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: err.Error(), ErrorMessage: "date range error"})
+		return
+	}
+
+	co := r.Context().Value("co").(*core.Core)
+	co.Logger.Printf("Fetching transactions from %s to %s", fromDateParsed.Format("2006-01-02"), toDateParsed.Format("2006-01-02"))
+
+	out, err := co.BQClient.GetDailyTotalSpendByTimeframe(userID, fromDateParsed, toDateParsed)
+	if err != nil {
+		co.Logger.Printf("Error fetching transactions: %v", err)
+		jsonResponse(http.StatusInternalServerError, w, ErrorResponse{Error: err.Error(), ErrorMessage: "unable to fetch transactions"})
+		return
+	}
+
+	co.Logger.Printf("Successfully fetched %d daily total spend analytical for userID: %d", len(out), userID)
+	jsonResponse(http.StatusOK, w, out)
+}
+
+func GetSpendOnCategoriesMonthOnMonthHandler(w http.ResponseWriter, r *http.Request) {
+	fromDate := r.URL.Query().Get("from")
+	toDate := r.URL.Query().Get("to")
+	userID := 1
+
+	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
+	if err != nil {
+		co := r.Context().Value("co").(*core.Core)
+		co.Logger.Printf("Invalid date range: %v", err)
+		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: err.Error(), ErrorMessage: "date range error"})
+		return
+	}
+
+	co := r.Context().Value("co").(*core.Core)
+	co.Logger.Printf("Fetching transactions from %s to %s", fromDateParsed.Format("2006-01-02"), toDateParsed.Format("2006-01-02"))
+
+	out, err := co.BQClient.GetSpendOnCategoriesMonthOnMonth(userID, fromDateParsed, toDateParsed)
+	if err != nil {
+		co.Logger.Printf("Error fetching transactions: %v", err)
+		jsonResponse(http.StatusInternalServerError, w, ErrorResponse{Error: err.Error(), ErrorMessage: "unable to fetch transactions"})
+		return
+	}
+
+	co.Logger.Printf("Successfully fetched %d spend month on month analytical for userID: %d", len(out), userID)
+	jsonResponse(http.StatusOK, w, out)
+
+}

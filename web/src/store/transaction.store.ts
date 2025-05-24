@@ -28,6 +28,8 @@ export const useTransactionStore = defineStore('transactionState', {
         allTransactions: ref<Transaction[]>([]),
         allSpendsByCategories: ref<{ category: string, totalAmount: number }[]>([]),
         allCategories: ref<{ id: number; category: string; }[]>([]),
+        totalDailySpends: ref<{ unixMiliseconds: number, amount: number }[]>([]),
+        spendOnCategoriesMonthOnMonth: ref<{ month: string, category: string, totalSpendAmount: number }[]>([]),
     }),
     actions: {
         async getAllCategories() {
@@ -94,6 +96,52 @@ export const useTransactionStore = defineStore('transactionState', {
             this.allSpendsByCategories = data.data as { category: string, totalAmount: number }[];
             return data.data as { category: string, totalAmount: number }[];
         },
+        async getDailyTotalSpendByTimeframe(): Promise<{ unixMiliseconds: number, amount: number }[]> {
+            const fromDateStr = this.startDate.toISOString().slice(0, 10);
+            const toDateStr = this.endDate.toISOString().slice(0, 10);
+
+            const url = new URL(`${API_BASE_URL}/api/v1/analytics/getDailySpendByTimeframe`);
+            url.searchParams.append('from', fromDateStr);
+            url.searchParams.append('to', toDateStr);
+
+            const resp = await window.fetch(url.toString(), {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            this.totalDailySpends = data.data as { unixMiliseconds: number, amount: number }[];
+            return data.data as { unixMiliseconds: number, amount: number }[];
+        },
+        async getSpendOnCategoriesMonthOnMonth(): Promise<{ month: string, category: string, totalSpendAmount: number }[]> {
+            const fromDateStr = this.startDate.toISOString().slice(0, 10);
+            const toDateStr = this.endDate.toISOString().slice(0, 10);
+
+            const url = new URL(`${API_BASE_URL}/api/v1/analytics/getSpendOnCategoriesMonthOnMonth`);
+            url.searchParams.append('from', fromDateStr);
+            url.searchParams.append('to', toDateStr);
+
+            const resp = await window.fetch(url.toString(), {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            this.spendOnCategoriesMonthOnMonth = data.data as { month: string, category: string, totalSpendAmount: number }[];
+            return data.data as { month: string, category: string, totalSpendAmount: number }[];
+        },
         async createTransaction() {
             const newTransaction = {
                 id: Date.now(),
@@ -117,7 +165,11 @@ export const useTransactionStore = defineStore('transactionState', {
             this.resetTransactionForm();
 
             // Update the transactions and spends by categories
-            Promise.all([this.getTransactions(), this.getAllSpendsByCategories()]).then(() => {
+            Promise.all([
+                this.getTransactions(),
+                this.getAllSpendsByCategories(),
+                this.getDailyTotalSpendByTimeframe(),
+            ]).then(() => {
                 console.log('transactions and spends by categories updated.');
             }).catch((error) => {
                 console.error('Failed to update transactions and spends by categories:', error);

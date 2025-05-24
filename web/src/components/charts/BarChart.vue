@@ -5,22 +5,25 @@
         <div class="text-sm">Your spend by categories month-on-month. Keep an eye on your expenditures.</div>
     </div>
     <div id="chart" class="w-full">
-        <apexchart type="bar" height="350" :options="chartOptions" :series="series"></apexchart>
+        <apexchart type="bar" height="350" :options="chartOptions" :series="props.series"></apexchart>
     </div>
 </template>
 
 <script setup>
 
-const series = [{
-    name: 'Net Profit',
-    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
-}, {
-    name: 'Revenue',
-    data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
-}, {
-    name: 'Free Cash Flow',
-    data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
-}];
+const props = defineProps({
+    categories: {
+        type: Array,
+        required: true,
+        default: []
+    },
+    series: {
+        type: Array,
+        required: true,
+        default: []
+    }
+
+});
 
 const chartOptions = {
     chart: {
@@ -44,11 +47,11 @@ const chartOptions = {
         colors: ['transparent']
     },
     xaxis: {
-        categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        categories: props.categories,
     },
     yaxis: {
         title: {
-            text: '$ (thousands)'
+            text: 'INR (Indian Rupee)'
         }
     },
     fill: {
@@ -57,12 +60,23 @@ const chartOptions = {
     tooltip: {
         y: {
             formatter: function (val) {
-                return "$ " + val + " thousands"
+                return INRRuppe.format(val);
             }
         }
     }
-}
-    ;
+};
+
+
+// Utilities
+const USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+});
+
+const INRRuppe = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+});
 
 
 

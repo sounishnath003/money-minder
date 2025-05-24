@@ -177,3 +177,99 @@ func (cbq *CustomBigQueryClient) AddTransaction(transaction models.Transaction) 
 
 	return true, nil
 }
+
+type DailyTotalSpend struct {
+	UnixMiliseconds int `json:"unixMiliseconds"`
+	Amount          int `json:"amount"`
+}
+
+// GetDailyTotalSpendByTimeframe returns the user's daily spend based
+// on the particular from date and end date.
+// DailyTotalSpend
+func (cbq *CustomBigQueryClient) GetDailyTotalSpendByTimeframe(userId int, fromDate, endDate time.Time) ([]DailyTotalSpend, error) {
+	query := cbq.Query(ANALYTICS_TOTAL_DAILY_SPEND_BY_DATE_RANGE)
+	query.Parameters = []bigquery.QueryParameter{
+		{
+			Name:  "UserID",
+			Value: userId,
+		},
+		{
+			Name:  "FromDate",
+			Value: fromDate,
+		},
+		{
+			Name:  "EndDate",
+			Value: endDate,
+		},
+	}
+
+	it, err := query.Read(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var results []DailyTotalSpend
+
+	for {
+		var spend DailyTotalSpend
+		err := it.Next(&spend)
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, spend)
+	}
+
+	return results, nil
+}
+
+type SpendOnCategoryMoM struct {
+	Seq              string `json:"-"`
+	Month            string `json:"month"`
+	Category         string `json:"category"`
+	TotalSpendAmount int    `json:"totalSpendAmount"`
+}
+
+// GetSpendOnCategoriesMonthOnMonth helps to get the spend on categories Month on Month from every month
+func (cbq *CustomBigQueryClient) GetSpendOnCategoriesMonthOnMonth(userId int, fromDate, endDate time.Time) ([]SpendOnCategoryMoM, error) {
+	query := cbq.Query(ANALYTICS_SPENDS_ON_CATEGORIES_MONTH_ON_MONTH)
+	query.Parameters = []bigquery.QueryParameter{
+		{
+			Name:  "UserID",
+			Value: userId,
+		},
+		{
+			Name:  "FromDate",
+			Value: fromDate,
+		},
+		{
+			Name:  "EndDate",
+			Value: endDate,
+		},
+	}
+
+	it, err := query.Read(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var results []SpendOnCategoryMoM
+
+	for {
+		var spend SpendOnCategoryMoM
+		err := it.Next(&spend)
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, spend)
+	}
+
+	return results, nil
+}
