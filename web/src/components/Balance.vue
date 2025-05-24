@@ -20,7 +20,7 @@
                         {{ tx.amount }}</span>
                 </div>
             </div>
-            <SpendByCategory />
+            <SpendByCategory class="w-full overflow-x-scroll" />
         </template>
     </div>
 </template>
