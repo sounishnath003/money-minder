@@ -1,11 +1,9 @@
 <template>
-
   <div class="h-1 bg-blue-600"></div>
   <div class="flex flex-col gap-5 p-4 rounded-lg dark:bg-gray-900 bg-neutral-50 min-h-screen">
     <!-- header -->
     <Header />
     <!-- header -->
-
     <!-- body -->
     <div v-if="inputPassword === sitePassword" class="flex flex-col gap-4">
       <main class="container mx-auto">
@@ -16,9 +14,7 @@
     <!-- body -->
 
     <!-- footer -->
-    <footer class="font-medium">
-      🚧 work is in progress
-    </footer>
+    <Footer />
     <!-- footer -->
   </div>
 
@@ -30,6 +26,7 @@ import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import Header from './components/Header.vue';
 import Home from './components/Home.vue';
+import Footer from './components/Footer.vue';
 import { useTransactionStore } from './store/transaction.store';
 
 import PasswordProtect from './components/PasswordProtect.vue';

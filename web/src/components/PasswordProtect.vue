@@ -1,8 +1,25 @@
 <template>
-    <div class="flex flex-col gap-4 min-h-screen justify-center items-center">
-        <h2 class="font-medium text-xl text-red-600 dark:text-white">Enter password to access</h2>
-        <input type="password" v-model="inputPassword" placeholder="Type password here"
-            class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+    <div class="-mt-6 flex flex-col gap-6 min-h-screen justify-center items-center bg-gray-50 dark:bg-gray-900">
+        <div class="w-full max-w-lg p-8 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+            <div class="text-center space-y-2">
+                <h2 class="text-md font-medium text-gray-900 dark:text-white">Welcome back, <a href="https://github.com/sounishnath003" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">@sounishnath003</a></h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Money Minder</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Enter your password to access your financial
+                    dashboard</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="relative">
+                    <input type="password" v-model="inputPassword" placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+                               dark:bg-gray-700 dark:text-white 
+                               focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                               placeholder-gray-400 dark:placeholder-gray-500" />
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Your data is protected with end-to-end encryption
+                </p>
+            </div>
+        </div>
     </div>
 </template>
 

@@ -28,11 +28,39 @@ const props = defineProps({
     }
 
 });
-
 const chartOptions = {
     chart: {
         type: 'bar',
-        height: 350
+        height: 350,
+        zoom: {
+            enabled: true,
+            type: 'x',
+            autoScaleYaxis: true,
+            zoomedArea: {
+                fill: {
+                    color: '#90CAF9',
+                    opacity: 0.4
+                },
+                stroke: {
+                    color: '#0D47A1',
+                    opacity: 0.4,
+                    width: 1
+                }
+            }
+        },
+        toolbar: {
+            show: true,
+            tools: {
+                download: true,
+                selection: true,
+                zoom: true,
+                zoomin: true,
+                zoomout: true,
+                pan: true,
+                reset: true
+            },
+            autoSelected: 'zoom'
+        }
     },
     plotOptions: {
         bar: {
@@ -70,7 +98,6 @@ const chartOptions = {
     }
 };
 
-
 // Utilities
 const USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -81,8 +108,6 @@ const INRRuppe = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
 });
-
-
 
 
 </script>

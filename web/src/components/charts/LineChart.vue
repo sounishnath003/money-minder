@@ -1,15 +1,18 @@
 <template>
-    <div class="text-center">
-        <div class="text-xl text-blue-700 dark:text-gray-200 font-semibold">&bull; Current month spends
+    <div class="flex flex-col gap-3 items-center justify-center w-full">
+        <div class="text-center">
+            <div class="text-xl text-blue-700 dark:text-gray-200 font-semibold">&bull; Current month spends
+            </div>
+            <div class="text-sm">Track your daily expenses to identify patterns and make informed financial decisions.
+            </div>
         </div>
-        <div class="text-sm">We often outsee the daily small small expenses which causes major impact in long run.</div>
-    </div>
 
-    <div id="chart" class="w-full">
-        <div v-if="!props.data?.length" class="flex justify-center items-center" :style="{ height: props.height }">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div id="chart" class="w-full">
+            <div v-if="!props.data?.length" class="flex justify-center items-center" :style="{ height: props.height }">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+            <apexchart v-else type="area" :height="props.height" :options="chartOptions" :series="series"></apexchart>
         </div>
-        <apexchart v-else type="area" :height="props.height" :options="chartOptions" :series="series"></apexchart>
     </div>
 </template>
 

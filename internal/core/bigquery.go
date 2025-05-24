@@ -241,14 +241,6 @@ func (cbq *CustomBigQueryClient) GetSpendOnCategoriesMonthOnMonth(userId int, fr
 			Name:  "UserID",
 			Value: userId,
 		},
-		{
-			Name:  "FromDate",
-			Value: fromDate,
-		},
-		{
-			Name:  "EndDate",
-			Value: endDate,
-		},
 	}
 
 	it, err := query.Read(context.Background())

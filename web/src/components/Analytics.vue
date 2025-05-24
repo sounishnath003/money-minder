@@ -1,14 +1,25 @@
 <template>
     <div class="text-2xl font-medium mb-3 lg:text-left text-center">
-        <b class="text-blue-600">Analytics &amp; Insights: </b>Understand your spends
+        <b class="text-blue-600">Money Minder Analytics: </b>Track & Optimize Your Finances
+    </div>
+    <div class="text-sm text-gray-600 dark:text-gray-400 mb-6 lg:text-left text-center">
+        Visualize your spending patterns and make smarter financial decisions
     </div>
     <div v-if="isLoading" class="flex justify-center items-center h-[350px] font-medium">
         Loading...
     </div>
     <div v-else class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
+        <div class="flex flex-row justify-between w-full">
+            <div class="w-1/2">
+                <BarChart :categories="spendOnCategoriesMonthOnMonth.months"
+                    :series="spendOnCategoriesMonthOnMonth.series" />
+            </div>
+            <div class="w-1/2">
+                <PieChart />
+            </div>
+        </div>
         <LineChart name="Total spend" :data="dailyTotalSpends" height="350" width="500" xtext="Timeline"
             ytext="Stock" />
-        <BarChart :categories="spendOnCategoriesMonthOnMonth.months" :series="spendOnCategoriesMonthOnMonth.series" />
     </div>
 </template>
 
@@ -17,6 +28,7 @@ import { computed, onMounted, ref } from 'vue';
 import BarChart from './charts/BarChart.vue';
 import LineChart from './charts/LineChart.vue';
 import { useTransactionStore } from '../store/transaction.store';
+import PieChart from './charts/PieChart.vue';
 
 // Define store
 const transactionStore = useTransactionStore();
