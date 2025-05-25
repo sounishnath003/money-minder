@@ -63,8 +63,13 @@ export const useTransactionStore = defineStore('transactionState', {
                     throw new Error(`HTTP error! status: ${resp.status}`);
                 }
 
-                const data = await resp.json();
-                this.allTransactions = data.data as Transaction[];
+                const data = await resp.json() as { data: Transaction[] };
+                // Convert string dates to Date objects for proper date handling in the UI
+                // This ensures consistent date formatting and enables date operations
+                this.allTransactions = data.data.map(tx => ({
+                    ...tx,
+                    createdAt: new Date(tx.createdAt)
+                }));
                 // Update spend by categories
                 await this.getAllSpendsByCategories();
                 return data.data as Transaction[];

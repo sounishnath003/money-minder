@@ -1,5 +1,5 @@
 <template>
-    <div class="gap-8 rounded-md">
+    <div class="gap-4 rounded-md">
         <div>
             <h2 class="font-medium text-xl text-blue-600 dark:text-white">&bull; Total Balance</h2>
         </div>
@@ -20,7 +20,10 @@
                         {{ tx.amount }}</span>
                 </div>
             </div>
-            <SpendByCategory class="w-full overflow-x-scroll" />
+            <DailySpendTracker />
+            <div class="w-full overflow-x-scroll">
+                <SpendByCategory />
+            </div>
         </template>
     </div>
 </template>
@@ -30,10 +33,11 @@ import { computed, onMounted, ref } from 'vue';
 import { useTransactionStore } from '../store/transaction.store';
 
 import SpendByCategory from './SpendByCategory.vue';
+import DailySpendTracker from './DailySpendTracker.vue';
 
 const transactionStore = useTransactionStore();
-const isLoading = ref(true);
 
+const isLoading = ref(true);
 const transactions = computed(() => transactionStore.allTransactions);
 
 // On component mount fetch all transactions

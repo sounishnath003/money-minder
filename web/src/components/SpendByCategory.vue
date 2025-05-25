@@ -1,5 +1,5 @@
 <template>
-    <div class="text-xl font-medium text-blue-600 dark:text-white"><span>&bull; Total spend in current month</span>
+    <div class="text-xl text-center my-2 font-medium text-blue-600 dark:text-white"><span>&bull; Total spend in current month</span>
     </div>
     <div class="w-full overflow-x-auto">
         <div class="min-w-full inline-block align-middle">
