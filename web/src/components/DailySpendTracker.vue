@@ -2,8 +2,9 @@
     <div class="text-center px-6 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg shadow text-sm">
         <div class="flex flex-col gap-1">
             <div>
-                <span class="font-medium">Today's Spending: </span>
-                <span class="font-semibold text-lg" :class="todaysSpend > 500 ? 'text-red-600' : 'text-green-600'">
+                <span class="font-medium text-blue-700 dark:text-blue-300">Today's Spending: </span>
+                <span class="font-semibold text-lg"
+                    :class="todaysSpend > yesterdaysSpend * 1.80 ? 'text-red-600' : 'text-gray-800 dark:text-white'">
                     {{ INRRuppe.format(todaysSpend) }}
                 </span>
             </div>
