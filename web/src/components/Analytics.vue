@@ -148,7 +148,7 @@ const spendOnCategoriesMonthOnMonth = computed(() => {
     }
 
     const months = [...new Set(transactionStore.spendOnCategoriesMonthOnMonth.map(item => item.month))];
-    const groupedByCategory = transactionStore.spendOnCategoriesMonthOnMonth.reduce((acc, curr) => {
+    const groupedByCategory = transactionStore.spendOnCategoriesMonthOnMonth.filter(tx => (tx.category !== 'Salary' && tx.category !== 'House Rents')).reduce((acc, curr) => {
         if (!acc[curr.category]) {
             acc[curr.category] = {
                 name: curr.category,
