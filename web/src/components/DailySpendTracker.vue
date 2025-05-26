@@ -4,7 +4,7 @@
             <div>
                 <span class="font-medium text-blue-700 dark:text-blue-300">Today's Spending: </span>
                 <span class="font-semibold text-lg"
-                    :class="todaysSpend > yesterdaysSpend * 1.80 ? 'text-red-600' : 'text-gray-800 dark:text-white'">
+                    :class="todaysSpend > yesterdaysSpend * 0.80 ? 'text-red-600' : 'text-gray-800 dark:text-white'">
                     {{ INRRuppe.format(todaysSpend) }}
                 </span>
             </div>
