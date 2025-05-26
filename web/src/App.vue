@@ -1,21 +1,20 @@
 <template>
-  <div class="h-1 bg-blue-600"></div>
+  <div v-if="inputPassword === sitePassword" class="h-1 bg-blue-600"></div>
   <div class="flex flex-col gap-5 p-4 rounded-lg dark:bg-gray-900 bg-neutral-50 min-h-screen">
-    <!-- header -->
-    <Header />
-    <!-- header -->
-    <!-- body -->
-    <div v-if="inputPassword === sitePassword" class="flex flex-col gap-4">
+    <PasswordProtect v-if="inputPassword !== sitePassword" @inputPasswordEvent="updateInputPassword" />
+    <div v-else class="flex flex-col gap-4">
+      <!-- header -->
+      <Header />
+      <!-- header -->
+      <!-- body -->
       <main class="container mx-auto">
         <RouterView />
       </main>
+      <!-- body -->
+      <!-- footer -->
+      <Footer />
+      <!-- footer -->
     </div>
-    <PasswordProtect v-else @inputPasswordEvent="updateInputPassword" />
-    <!-- body -->
-
-    <!-- footer -->
-    <Footer />
-    <!-- footer -->
   </div>
 
 </template>

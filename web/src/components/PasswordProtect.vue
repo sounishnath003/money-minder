@@ -1,9 +1,18 @@
 <template>
     <div class="-mt-6 flex flex-col gap-6 min-h-screen justify-center items-center bg-gray-50 dark:bg-gray-900">
-        <div class="w-full max-w-lg p-8 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+        <div class="w-full max-w-2xl p-8 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
             <div class="text-center space-y-2">
-                <h2 class="text-md font-medium text-gray-900 dark:text-white">Welcome back, <a href="https://github.com/sounishnath003" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">@sounishnath003</a></h2>
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Money Minder</h2>
+                <h1 class="text-4xl font-semibold text-blue-600 dark:text-blue-400">Money Minder</h1>
+                <p class="text-xl text-gray-600 dark:text-gray-400">Your Personal Finance Dashboard</p>
+                <p class="text-sm text-gray-500 dark:text-gray-500">Track expenses, analyze spending patterns, and make
+                    smarter financial decisions</p>
+            </div>
+
+            <div class="text-center space-y-2">
+                <h2 class="text-md font-medium text-gray-900 dark:text-white">Welcome back,
+                    <a href="https://github.com/sounishnath003" target="_blank"
+                        class="text-blue-600 dark:text-blue-400 hover:underline">@github/sounishnath003</a>
+                </h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">Enter your password to access your financial
                     dashboard</p>
             </div>
