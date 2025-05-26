@@ -2,12 +2,12 @@
   <div v-if="inputPassword === sitePassword" class="h-1 bg-blue-600"></div>
   <div class="flex flex-col gap-5 p-4 rounded-lg dark:bg-gray-900 bg-neutral-50 min-h-screen">
     <PasswordProtect v-if="inputPassword !== sitePassword" @inputPasswordEvent="updateInputPassword" />
-    <div v-else class="flex flex-col gap-4">
+    <div v-else class="flex flex-col gap-4 justify-center items-center">
       <!-- header -->
       <Header />
       <!-- header -->
       <!-- body -->
-      <main class="container mx-auto">
+      <main class="container w-full">
         <RouterView />
       </main>
       <!-- body -->

@@ -5,11 +5,15 @@
             <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(averageDailySpend) }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Highest Spending Category</h3>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Highest Spending Category
+            </h3>
             <p class="text-xl font-bold"
                 :class="highestSpendingCategory.category === 'Salary' ? 'text-green-600' : 'text-red-600'">{{
                     highestSpendingCategory.category }}</p>
-            <p class="text-sm text-gray-600">{{ INRRuppe.format(highestSpendingCategory.amount) }}</p>
+            <p class="text-sm text-gray-600">
+                {{ INRRuppe.format(highestSpendingCategory.amount) }}
+                <span class="text-xs">(excl. salary and house rents categories)</span>
+            </p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Savings Rate</h3>

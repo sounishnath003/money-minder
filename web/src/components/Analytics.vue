@@ -82,7 +82,7 @@ const averageDailySpend = computed(() => {
 
 const highestSpendingCategory = computed(() => {
     if (!transactionStore.spendOnCategoriesMonthOnMonth?.length) return { category: 'N/A', amount: 0 };
-    const categories = transactionStore.spendOnCategoriesMonthOnMonth.reduce((acc, curr) => {
+    const categories = transactionStore.spendOnCategoriesMonthOnMonth.filter(tx => (tx.category !== 'Salary' && tx.category !== 'House Rents')).reduce((acc, curr) => {
         if (!acc[curr.category]) acc[curr.category] = 0;
         acc[curr.category] += curr.totalSpendAmount;
         return acc;

@@ -1,6 +1,6 @@
 <template>
     <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <div class="text-lg font-medium mb-4">Category Growth Trends</div>
+        <div class="text-lg font-medium mb-4">Category Growth Trends (Month on Month)</div>
         <div class="space-y-3">
             <div v-for="category in categoryGrowth" :key="category.name" class="flex justify-between items-center">
                 <span class="text-gray-600 dark:text-gray-400">{{ category.name }}</span>
