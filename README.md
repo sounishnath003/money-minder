@@ -50,6 +50,9 @@ Money Minder is a personal finance management application that helps users track
 ### Analytics Section - 2:
 ![home-light](assets/analytics-2.png)
 
+### Analytics Section - 3:
+![home-light](assets/analytics-3.png)
+
 ### Author Information
 - **Name:** Sounish Nath
 - **GitHub:** [github.com/sounishnath003](https://github.com/sounishnath003)
