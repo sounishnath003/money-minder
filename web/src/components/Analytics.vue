@@ -13,6 +13,9 @@
         <AnalyticsSummaryCards :dailyTotalSpends="dailyTotalSpends" :highestSpendingCategory="highestSpendingCategory"
             :savingsRate="savingsRate" :averageDailySpend="averageDailySpend" />
 
+        <!-- paymentMethod KPI -->
+        <PaymentMethodsKPI :paymentMethodKPIs="paymentMethodKPIs" />
+
         <!-- Main Charts -->
         <div class="flex flex-col gap-4 lg:flex-row justify-between items-center w-full">
             <div class="w-full lg:w-1/2">
@@ -41,6 +44,7 @@ import PieChart from './charts/PieChart.vue';
 import AnalyticsSummaryCards from './analytics/AnalyticsSummaryCards.vue';
 import CategoryGrowthList from './analytics/CategoryGrowthList.vue';
 import SpendingTrendsChart from './analytics/SpendingTrendsChart.vue';
+import PaymentMethodsKPI from './analytics/PaymentMethodsKPI.vue';
 
 // Define store
 const transactionStore = useTransactionStore();
@@ -165,4 +169,81 @@ const spendOnCategoriesMonthOnMonth = computed(() => {
         series: Object.values(groupedByCategory)
     };
 });
+
+const paymentMethodKPIs = computed(() => {
+    if (!transactionStore.allTransactions?.length) return [];
+
+    // Separate income and expense transactions
+    const incomeTransactions = transactionStore.allTransactions.filter(tx => tx.transactionType === 'Income');
+    const expenseTransactions = transactionStore.allTransactions.filter(tx => tx.transactionType === 'Expense');
+
+    const paymentMethodTotals = transactionStore.allTransactions.reduce((acc, curr) => {
+        if (!acc[curr.paymentMethod]) {
+            acc[curr.paymentMethod] = {
+                total: 0,
+                income: 0,
+                expense: 0,
+                count: 0,
+                incomeCount: 0,
+                expenseCount: 0,
+                average: 0,
+                incomeAverage: 0,
+                expenseAverage: 0,
+                utilizationRate: 0
+            };
+        }
+
+        if (curr.transactionType === 'Income') {
+            acc[curr.paymentMethod].income += curr.amount;
+            acc[curr.paymentMethod].incomeCount += 1;
+        } else {
+            acc[curr.paymentMethod].expense += curr.amount;
+            acc[curr.paymentMethod].expenseCount += 1;
+        }
+
+        acc[curr.paymentMethod].total = acc[curr.paymentMethod].income - acc[curr.paymentMethod].expense;
+        acc[curr.paymentMethod].count = acc[curr.paymentMethod].incomeCount + acc[curr.paymentMethod].expenseCount;
+
+        // Calculate averages
+        acc[curr.paymentMethod].incomeAverage = acc[curr.paymentMethod].incomeCount ?
+            acc[curr.paymentMethod].income / acc[curr.paymentMethod].incomeCount : 0;
+        acc[curr.paymentMethod].expenseAverage = acc[curr.paymentMethod].expenseCount ?
+            acc[curr.paymentMethod].expense / acc[curr.paymentMethod].expenseCount : 0;
+        acc[curr.paymentMethod].average = acc[curr.paymentMethod].count ?
+            acc[curr.paymentMethod].total / acc[curr.paymentMethod].count : 0;
+
+        // Calculate utilization rate (expense/income ratio)
+        acc[curr.paymentMethod].utilizationRate = acc[curr.paymentMethod].income ?
+            (acc[curr.paymentMethod].expense / acc[curr.paymentMethod].income * 100).toFixed(1) : 0;
+
+        return acc;
+    }, {});
+
+    const totalNetAmount = Object.values(paymentMethodTotals).reduce((sum, data) => sum + data.total, 0);
+
+    return Object.entries(paymentMethodTotals).map(([method, data]) => ({
+        method,
+        total: data.total,
+        income: data.income,
+        expense: data.expense,
+        count: data.count,
+        incomeCount: data.incomeCount,
+        expenseCount: data.expenseCount,
+        average: data.average,
+        incomeAverage: data.incomeAverage,
+        expenseAverage: data.expenseAverage,
+        utilizationRate: data.utilizationRate,
+        percentage: totalNetAmount ? (data.total / totalNetAmount * 100).toFixed(1) : 0,
+        // Additional KPIs
+        transactionFrequency: (data.count / transactionStore.allTransactions.length * 100).toFixed(1),
+        expenseRatio: data.expense ? (data.expense / transactionStore.allTransactions
+            .filter(tx => tx.transactionType === 'Expense')
+            .reduce((sum, tx) => sum + tx.amount, 0) * 100).toFixed(1) : 0,
+        incomeRatio: data.income ? (data.income / transactionStore.allTransactions
+            .filter(tx => tx.transactionType === 'Income')
+            .reduce((sum, tx) => sum + tx.amount, 0) * 100).toFixed(1) : 0
+    }));
+});
+
+
 </script>

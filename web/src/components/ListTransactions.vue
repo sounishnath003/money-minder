@@ -3,7 +3,7 @@
         <div class="my-5">
             <h2 class="font-medium text-xl lg:text-3xl text-blue-600 dark:text-white">&bull; All transactions ({{
                 transactions.length
-            }})</h2>
+                }})</h2>
         </div>
         <div class="w-full overflow-x-auto">
             <div class="min-w-full inline-block align-middle">
@@ -19,6 +19,9 @@
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Name
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Payment Method
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Transaction Type
@@ -42,6 +45,12 @@
                                 <th scope="row"
                                     class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ transaction.name }}
+                                </th>
+                                <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                    <span class="px-3 py-1 rounded-full text-sm"
+                                        :class="getPaymentMethodColor(transaction.paymentMethod)">
+                                        {{ transaction.paymentMethod }}
+                                    </span>
                                 </th>
                                 <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
                                     <span class="px-3 py-1 rounded-full text-sm"
@@ -112,6 +121,23 @@ const getCategoryName = (categoryId) => {
 };
 
 // Utilities
+
+const getPaymentMethodColor = (paymentMethod) => {
+    switch (paymentMethod) {
+        case 'UPI':
+            return 'bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-300';
+        case 'Cash':
+            return 'bg-green-50 text-green-600 dark:bg-green-900 dark:text-green-300';
+        case 'BankDeposit':
+            return 'bg-purple-50 text-purple-600 dark:bg-purple-900 dark:text-purple-300';
+        case 'CreditCard':
+            return 'bg-red-50 text-red-600 dark:bg-red-900 dark:text-red-300';
+        default:
+            return 'bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+    }
+};
+
+
 const USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

@@ -8,6 +8,7 @@ export interface Transaction {
     name: string;
     transactionType: string;
     catagoryID: number;
+    paymentMethod: string;
     amount: number;
     userID: number;
     createdAt: Date;
@@ -174,15 +175,19 @@ export const useTransactionStore = defineStore('transactionState', {
 
             if (this.addTransactionForm.transactionType === 'Select transaction type') {
                 window.alert('Please select a transaction type');
+                return;
             }
             if (this.addTransactionForm.paymentMethod === 'Select payment method') {
                 window.alert('Please select a payment method');
+                return;
             }
             if (this.addTransactionForm.categoryID === 0) {
                 window.alert('Please select a category');
+                return;
             }
             if (this.addTransactionForm.amount === 0) {
                 window.alert('Please provide amount > 0');
+                return;
             }
 
             const resp = await window.fetch(`${API_BASE_URL}/api/v1/transactions`, {
