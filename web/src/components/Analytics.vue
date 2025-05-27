@@ -13,9 +13,6 @@
         <AnalyticsSummaryCards :dailyTotalSpends="dailyTotalSpends" :highestSpendingCategory="highestSpendingCategory"
             :savingsRate="savingsRate" :averageDailySpend="averageDailySpend" />
 
-        <!-- paymentMethod KPI -->
-        <PaymentMethodsKPI :paymentMethodKPIs="paymentMethodKPIs" />
-
         <!-- Main Charts -->
         <div class="flex flex-col gap-4 lg:flex-row justify-between items-center w-full">
             <div class="w-full lg:w-1/2">
@@ -32,6 +29,9 @@
             <SpendingTrendsChart :dailyTotalSpends="dailyTotalSpends" />
             <CategoryGrowthList :categoryGrowth="categoryGrowth" />
         </div>
+        
+        <!-- paymentMethod KPI -->
+        <PaymentMethodsKPI :paymentMethodKPIs="paymentMethodKPIs" />
     </div>
 </template>
 
