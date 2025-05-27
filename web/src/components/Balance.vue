@@ -2,22 +2,34 @@
     <div class="gap-4 rounded-md">
         <div>
             <h2 class="font-medium text-xl text-blue-600 dark:text-white">&bull; Total Balance</h2>
+            <div class="text-xs text-gray-600 dark:text-gray-400 -mb-3">Note: Hover over amounts to view them</div>
         </div>
         <div v-if="isLoading" class="text-center my-auto font-medium py-4">
             Loading...
         </div>
         <template v-else>
             <div>
-                <span class="font-bold cursor-pointer text-2xl md:text-4xl p-2"
-                    :class="determineSign == '+' ? 'text-green-600' : 'text-red-600'"> {{ INRRuppe.format(balance)
+                <span class="font-bold cursor-pointer text-3xl md:text-5xl p-2 flex items-center gap-2"
+                    :class="determineSign == '+' ? 'text-green-600' : 'text-red-600'"
+                    @mouseenter="isBalanceVisible = true" @mouseleave="isBalanceVisible = false">
+                    <span v-if="isBalanceVisible" class="transition-opacity duration-600">{{ INRRuppe.format(balance)
                     }}</span>
+                    <span v-else class="transition-opacity duration-600">{{ '•'.repeat(INRRuppe.format(balance).length)
+                    }}</span>
+                </span>
             </div>
             <div class="grid grid-cols-2 gap-5">
-                <div class="text-md md:text-xl font-medium" v-for="tx in spendByTransactionTypes"
+                <div class="text-lg md:text-2xl font-medium" v-for="tx in spendByTransactionTypes"
                     :id="tx.transactionType">
-                    {{ tx.transactionType }}&colon; <span class="font-semibold"
-                        :class="tx.transactionType === 'Income' ? 'text-green-600' : 'text-red-600'">
-                        {{ tx.amount }}</span>
+                    {{ tx.transactionType }}&colon; <span class="font-semibold cursor-pointer flex items-center gap-2"
+                        :class="tx.transactionType === 'Income' ? 'text-green-600' : 'text-red-600'"
+                        @mouseenter="toggleAmountVisibility(tx.transactionType, true)"
+                        @mouseleave="toggleAmountVisibility(tx.transactionType, false)">
+                        <span v-if="isAmountVisible(tx.transactionType)" class="transition-opacity duration-600">{{
+                            tx.amount }}</span>
+                        <span v-else class="transition-opacity duration-600">{{ 'X'.repeat(tx.amount.length - 3)
+                            }}</span>
+                    </span>
                 </div>
             </div>
             <DailySpendTracker />
@@ -39,6 +51,22 @@ const transactionStore = useTransactionStore();
 
 const isLoading = ref(true);
 const transactions = computed(() => transactionStore.allTransactions);
+
+// Visibility states
+const isBalanceVisible = ref(false);
+const visibleAmounts = ref({
+    Income: false,
+    Expense: false
+});
+
+// Toggle functions
+const toggleAmountVisibility = (type, isVisible) => {
+    visibleAmounts.value[type] = isVisible;
+};
+
+const isAmountVisible = (type) => {
+    return visibleAmounts.value[type];
+};
 
 // On component mount fetch all transactions
 onMounted(async () => {
