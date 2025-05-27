@@ -52,6 +52,21 @@ func GetAllCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(http.StatusOK, w, categories)
 }
 
+func GetAllPaymentMethodOptionsHandler(w http.ResponseWriter, r *http.Request) {
+	co := r.Context().Value("co").(*core.Core)
+	co.Logger.Printf("Fetching all active categories")
+
+	paymentMethods := []models.PaymentMethod{
+		models.UPI,
+		models.Cash,
+		models.BankDeposit,
+		models.CreditCard,
+	}
+
+	co.Logger.Printf("sending all available payment methods: %d", len(paymentMethods))
+	jsonResponse(http.StatusOK, w, paymentMethods)
+}
+
 // GetTransactionsHandler handler helps to get the total balance available for this month
 func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 	fromDate := r.URL.Query().Get("from")

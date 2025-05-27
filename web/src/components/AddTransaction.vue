@@ -31,6 +31,16 @@
                     </select>
                 </div>
                 <div class="mb-5">
+                    <label for="paymentMethod"
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Payment Method:</label>
+                    <select v-model="transactionStore.addTransactionForm.paymentMethod" name="paymentMethod"
+                        id="paymentMethod" :class="formInputCss">
+                        <option value="Select payment method">Select payment method</option>
+                        <option v-for="paymentMethod in paymentMethods" :id="paymentMethod" :value="paymentMethod">{{
+                            paymentMethod }}</option>
+                    </select>
+                </div>
+                <div class="mb-5">
                     <label for="amount"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount:</label>
                     <input autocomplete="off" v-model="transactionStore.addTransactionForm.amount" type="number"
@@ -56,6 +66,7 @@ const transactionStore = useTransactionStore();
 
 // define categories list
 const categories = ref([]);
+const paymentMethods = ref([]);
 const submitBtnText = ref('Create new transaction');
 const submitBtn = ref(null);
 
@@ -79,6 +90,7 @@ onMounted(async () => {
 // fetch all categories
 async function fetchCategories() {
     categories.value = await transactionStore.getAllCategories();
+    paymentMethods.value = await transactionStore.getPaymentMethods();
 }
 
 

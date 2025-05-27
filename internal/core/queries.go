@@ -26,8 +26,8 @@ const (
 
 	QUERY_ADD_NEW_TRANSACTION = `
 	INSERT INTO sounish-cloud-workstation.money_minder.t_transactions
-    (ID,Name,TransactionType,UserID,CategoryID,Amount,CreatedAt)
-    VALUES (@ID, @Name, @TransactionType, @UserID, @CategoryID, @Amount, @CreatedAt);`
+    (ID,Name,TransactionType,UserID,CategoryID,PaymentMethod,Amount,CreatedAt)
+    VALUES (@ID, @Name, @TransactionType, @UserID, @CategoryID, @PaymentMethod, @Amount, @CreatedAt);`
 
 	ANALYTICS_TOTAL_DAILY_SPEND_BY_DATE_RANGE = `SELECT
 	UNIX_MILLIS(TIMESTAMP(DATE(CreatedAt))) AS UnixMiliseconds, SUM(Amount) AS Amount

@@ -59,6 +59,7 @@ func defineApiRouterV1Endpoints() http.Handler {
 	// API /api/v1 route endpoints
 	router.HandleFunc("GET /healthz", v1.HealthHandler)
 	router.HandleFunc("GET /categories", v1.GetAllCategoriesHandler)
+	router.HandleFunc("GET /paymentMethods", v1.GetAllPaymentMethodOptionsHandler)
 	router.HandleFunc("GET /transactions", v1.GetTransactionsHandler)
 	router.HandleFunc("POST /transactions", v1.AddTransactionHandler)
 	router.HandleFunc("GET /transactions/spendByCategory", v1.GetTotalSpendByCategoryHandler)

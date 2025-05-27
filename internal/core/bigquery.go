@@ -148,6 +148,10 @@ func (cbq *CustomBigQueryClient) AddTransaction(transaction models.Transaction) 
 			Value: transaction.TransactionType,
 		},
 		{
+			Name:  "PaymentMethod",
+			Value: transaction.PaymentMethod,
+		},
+		{
 			Name:  "UserID",
 			Value: transaction.UserID,
 		},

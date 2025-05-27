@@ -22,12 +22,14 @@ export const useTransactionStore = defineStore('transactionState', {
         addTransactionForm: {
             name: ref(''),
             transactionType: ref('Select transaction type'),
+            paymentMethod: ref('Select payment method'),
             categoryID: ref(0),
             amount: ref(0)
         },
         allTransactions: ref<Transaction[]>([]),
         allSpendsByCategories: ref<{ category: string, totalAmount: number }[]>([]),
         allCategories: ref<{ id: number; category: string; }[]>([]),
+        paymentMethods: ref<string[]>([]),
         totalDailySpends: ref<{ unixMiliseconds: number, amount: number }[]>([]),
         spendOnCategoriesMonthOnMonth: ref<{ month: string, category: string, totalSpendAmount: number }[]>([]),
     }),
@@ -42,6 +44,17 @@ export const useTransactionStore = defineStore('transactionState', {
             const data = await resp.json();
             this.allCategories = data.data as { id: number; category: string; }[];
             return this.allCategories;
+        },
+        async getPaymentMethods() {
+            const resp = await window.fetch(`${API_BASE_URL}/api/v1/paymentMethods`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await resp.json();
+            this.paymentMethods = data.data as string[];
+            return this.paymentMethods;
         },
         async getTransactions(): Promise<Transaction[]> {
             try {
@@ -154,9 +167,23 @@ export const useTransactionStore = defineStore('transactionState', {
                 name: this.addTransactionForm.name,
                 transactionType: this.addTransactionForm.transactionType,
                 categoryID: +this.addTransactionForm.categoryID,
+                paymentMethod: this.addTransactionForm.paymentMethod,
                 amount: this.addTransactionForm.amount,
                 createdAt: new Date()
             };
+
+            if (this.addTransactionForm.transactionType === 'Select transaction type') {
+                window.alert('Please select a transaction type');
+            }
+            if (this.addTransactionForm.paymentMethod === 'Select payment method') {
+                window.alert('Please select a payment method');
+            }
+            if (this.addTransactionForm.categoryID === 0) {
+                window.alert('Please select a category');
+            }
+            if (this.addTransactionForm.amount === 0) {
+                window.alert('Please provide amount > 0');
+            }
 
             const resp = await window.fetch(`${API_BASE_URL}/api/v1/transactions`, {
                 method: 'POST',
@@ -183,6 +210,7 @@ export const useTransactionStore = defineStore('transactionState', {
         resetTransactionForm() {
             this.addTransactionForm.name = '';
             this.addTransactionForm.transactionType = 'Select transaction type';
+            this.addTransactionForm.paymentMethod = 'Select payment method';
             this.addTransactionForm.categoryID = 0;
             this.addTransactionForm.amount = 0;
         }
