@@ -128,9 +128,9 @@ const getPaymentMethodColor = (paymentMethod) => {
             return 'bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-300';
         case 'Cash':
             return 'bg-green-50 text-green-600 dark:bg-green-900 dark:text-green-300';
-        case 'BankDeposit':
+        case 'Bank Deposit':
             return 'bg-purple-50 text-purple-600 dark:bg-purple-900 dark:text-purple-300';
-        case 'CreditCard':
+        case 'Credit Card':
             return 'bg-red-50 text-red-600 dark:bg-red-900 dark:text-red-300';
         default:
             return 'bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
