@@ -1,7 +1,7 @@
 <template>
     <div class="gap-4 rounded-md">
         <div>
-            <h2 class="font-medium text-xl text-blue-600 dark:text-white">&bull; Total Balance</h2>
+            <h2 class="font-medium text-xl text-blue-600 dark:text-white text-center">&bull; Total Balance</h2>
             <div class="text-xs text-gray-600 dark:text-gray-400 -mb-3">Note: Hover over amounts to view them</div>
         </div>
         <div v-if="isLoading" class="text-center my-auto font-medium py-4">
