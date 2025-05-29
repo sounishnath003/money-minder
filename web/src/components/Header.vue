@@ -22,6 +22,6 @@ const route = useRoute();
 const routings = [
     { name: 'Home', path: '/' },
     { name: 'Analytics', path: '/analytics' },
-    { name: 'Finance Advisory', path: '/finance-advisory' },
+    { name: 'Advisory', path: '/finance-advisory' },
 ]
 </script>
