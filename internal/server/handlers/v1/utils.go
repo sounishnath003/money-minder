@@ -10,12 +10,13 @@ import (
 //
 // Returns fromDate, toDate, error
 func CheckDateRange(fromDate, toDate string) (time.Time, time.Time, error) {
-	fromDateParsed, err := time.Parse("2006-01-02", fromDate)
+	fromDateParsed, err := time.Parse("2006-01-02T15:04:00.000Z", fromDate)
 	if err != nil {
 		return time.Time{}, time.Time{}, err
 	}
 
-	toDateParsed, err := time.Parse("2006-01-02", toDate)
+	toDateParsed, err := time.Parse("2006-01-02T15:04:00.000Z", toDate)
+	toDateParsed = toDateParsed.AddDate(0, 0, 1)
 	if err != nil {
 		return time.Time{}, time.Time{}, err
 	}

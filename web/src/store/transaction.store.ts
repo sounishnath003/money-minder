@@ -59,8 +59,8 @@ export const useTransactionStore = defineStore('transactionState', {
         },
         async getTransactions(): Promise<Transaction[]> {
             try {
-                const fromDateStr = this.startDate.toISOString().slice(0, 10);
-                const toDateStr = this.endDate.toISOString().slice(0, 10);
+                const fromDateStr = this.startDate.toISOString();
+                const toDateStr = this.endDate.toISOString();
 
                 const url = new URL(`${API_BASE_URL}/api/v1/transactions`);
                 url.searchParams.append('from', fromDateStr);
@@ -93,8 +93,8 @@ export const useTransactionStore = defineStore('transactionState', {
             }
         },
         async getAllSpendsByCategories(): Promise<{ category: string, totalAmount: number }[]> {
-            const fromDateStr = this.startDate.toISOString().slice(0, 10);
-            const toDateStr = this.endDate.toISOString().slice(0, 10);
+            const fromDateStr = this.startDate.toISOString();
+            const toDateStr = this.endDate.toISOString();
 
             const url = new URL(`${API_BASE_URL}/api/v1/transactions/spendByCategory`);
             url.searchParams.append('from', fromDateStr);
@@ -116,8 +116,8 @@ export const useTransactionStore = defineStore('transactionState', {
             return data.data as { category: string, totalAmount: number }[];
         },
         async getDailyTotalSpendByTimeframe(): Promise<{ unixMiliseconds: number, amount: number }[]> {
-            const fromDateStr = this.startDate.toISOString().slice(0, 10);
-            const toDateStr = this.endDate.toISOString().slice(0, 10);
+            const fromDateStr = this.startDate.toISOString();
+            const toDateStr = this.endDate.toISOString();
 
             const url = new URL(`${API_BASE_URL}/api/v1/analytics/getDailySpendByTimeframe`);
             url.searchParams.append('from', fromDateStr);
@@ -139,8 +139,8 @@ export const useTransactionStore = defineStore('transactionState', {
             return data.data as { unixMiliseconds: number, amount: number }[];
         },
         async getSpendOnCategoriesMonthOnMonth(): Promise<{ month: string, category: string, totalSpendAmount: number }[]> {
-            const fromDateStr = this.startDate.toISOString().slice(0, 10);
-            const toDateStr = this.endDate.toISOString().slice(0, 10);
+            const fromDateStr = this.startDate.toISOString();
+            const toDateStr = this.endDate.toISOString();
 
             const url = new URL(`${API_BASE_URL}/api/v1/analytics/getSpendOnCategoriesMonthOnMonth`);
             url.searchParams.append('from', fromDateStr);

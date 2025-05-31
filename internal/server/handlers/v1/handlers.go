@@ -82,7 +82,7 @@ func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	co := r.Context().Value("co").(*core.Core)
-	co.Logger.Printf("Fetching transactions from %s to %s", fromDateParsed.Format("2006-01-02"), toDateParsed.Format("2006-01-02"))
+	co.Logger.Printf("Fetching transactions from %s to %s", fromDateParsed.Format("2006-01-02 "), toDateParsed.Format("2006-01-02"))
 
 	out, err := co.BQClient.GetTransactionsByUserId(userID, fromDateParsed, toDateParsed)
 	if err != nil {
