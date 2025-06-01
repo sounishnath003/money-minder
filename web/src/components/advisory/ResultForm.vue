@@ -67,7 +67,6 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import { computed, ref } from 'vue';
 
@@ -100,33 +99,16 @@ const weeks = computed(() => totalMonths.value * 4.33)
 const months = computed(() => Math.ceil(totalMonths.value))
 const years = computed(() => Math.round(months.value / 12))
 
-// Calculate worthiness score using multiple factors
+// Calculate goal score using the new algorithm
 const score = computed(() => {
-    // Base score starts at 50
-    let score = 50
+    const expToCostRatio = goalYears / years.value
+    let goalScore = expToCostRatio * impactLevel
 
-    // Factor 1: Time to save vs value years (up to ±25 points)
-    const timeValueRatio = years.value / goalYears
-    score += (1 - timeValueRatio) * 25
-
-    // Factor 2: Impact level (up to ±15 points)
-    score += (impactLevel - 3) * 5
-
-    // Factor 3: Cost relative to income (up to ±10 points)
-    const costIncomeRatio = goalCost / (income * 12)
-    score -= costIncomeRatio * 10
-
-    // Factor 4: Goal type bonus (up to ±10 points)
-    score += goalType === 'Experience' ? 10 : 0
-
-    // Factor 5: Savings rate adjustment (up to ±10 points)
-    score += (savingsPct - 20) / 8
-
-    // Ensure score stays within 0-100 range
-    return Math.max(0, Math.min(100, score))
+    // Cap the score at 100
+    return Math.min(100, goalScore)
 })
 
-// Enhanced result messages with more context
+// Updated result messages based on new scoring system
 const result = computed(() => {
     const defaultResult = {
         verdict: 'Calculating...',
@@ -136,23 +118,29 @@ const result = computed(() => {
 
     if (!score.value && score.value !== 0) return defaultResult
 
-    if (score.value < 30) {
+    if (score.value <= 50) {
         return {
-            verdict: `Your wallet is screaming in agony, ${goalName}!`,
-            message: "I've seen better financial decisions in a horror movie. Your savings account will haunt you like a ghost if you proceed. Maybe consult a financial exorcist first?",
+            verdict: `Worthless 😞`,
+            message: `${goalName} might not be worth your time and money right now. Consider if this aligns with your priorities.`,
             color: "text-red-600 dark:text-red-400"
         }
-    } else if (score.value < 70) {
+    } else if (score.value <= 75) {
         return {
-            verdict: `${goalName}, are you sure you want to dance with the devil?`,
-            message: "Your bank account is giving me serious 'The Shining' vibes. It's not all bad, but proceed with caution - your future self might be watching you through the financial mirror.",
+            verdict: `Whatever 😶`,
+            message: `${goalName} is a neutral choice. It's neither great nor terrible - proceed if it makes you happy.`,
             color: "text-yellow-600 dark:text-yellow-400"
+        }
+    } else if (score.value <= 95) {
+        return {
+            verdict: `Worth it 😁`,
+            message: `${goalName} looks like a solid investment! The value you'll get seems to justify the cost.`,
+            color: "text-green-600 dark:text-green-400"
         }
     } else {
         return {
-            verdict: `${goalName}, the financial stars have aligned!`,
-            message: "Your wallet is purring like a satisfied cat. This goal is so good, it's almost suspicious. Are you sure you're not a financial wizard in disguise?",
-            color: "text-green-600 dark:text-green-400"
+            verdict: `Just do it! 😱`,
+            message: `${goalName} is an amazing opportunity! The value-to-cost ratio is exceptional.`,
+            color: "text-blue-600 dark:text-blue-400"
         }
     }
 })
