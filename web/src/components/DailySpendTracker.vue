@@ -31,7 +31,7 @@ import { useTransactionStore } from '../store/transaction.store';
 const transactionStore = useTransactionStore();
 const transactions = computed(() => transactionStore.allTransactions);
 
-const todaysSpend = computed(() => transactionStore.allTransactions.filter((tx) => tx.createdAt.toDateString() === new Date().toDateString()).reduce((prev, tx) => prev + tx.amount, 0))
+const todaysSpend = computed(() => transactionStore.allTransactions.filter((tx) => (tx.createdAt.toDateString() === new Date().toDateString() && tx.transactionType === 'Expense')).reduce((prev, tx) => prev + tx.amount, 0))
 
 // Get yesterday's date
 const getYesterdayDate = () => {

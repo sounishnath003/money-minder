@@ -1,12 +1,11 @@
 <template>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Average Daily Spend</h3>
             <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(averageDailySpend) }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Highest Spending Category
-            </h3>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Highest Spending Category</h3>
             <p class="text-xl font-bold"
                 :class="highestSpendingCategory.category === 'Salary' ? 'text-green-600' : 'text-red-600'">{{
                     highestSpendingCategory.category }}</p>
@@ -14,6 +13,10 @@
                 {{ INRRuppe.format(highestSpendingCategory.amount) }}
                 <span class="text-xs">(excl. salary and house rents categories)</span>
             </p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Investments</h3>
+            <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(investments) }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Savings Rate</h3>
@@ -40,6 +43,11 @@ defineProps({
         type: [Number, String],
         required: true,
         default: '0'
+    },
+    investments: {
+        type: Number,
+        required: true,
+        default: 0
     }
 });
 

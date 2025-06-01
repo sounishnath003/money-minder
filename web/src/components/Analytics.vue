@@ -11,7 +11,7 @@
     <div v-else class="flex flex-col gap-6 mx-auto items-center justify-center w-full">
         <!-- Summary Cards -->
         <AnalyticsSummaryCards :dailyTotalSpends="dailyTotalSpends" :highestSpendingCategory="highestSpendingCategory"
-            :savingsRate="savingsRate" :averageDailySpend="averageDailySpend" />
+            :savingsRate="savingsRate" :averageDailySpend="averageDailySpend" :investments="investments" />
 
         <!-- Main Charts -->
         <div class="flex flex-col gap-4 lg:flex-row justify-between items-center w-full">
@@ -29,7 +29,7 @@
             <SpendingTrendsChart :dailyTotalSpends="dailyTotalSpends" />
             <CategoryGrowthList :categoryGrowth="categoryGrowth" />
         </div>
-        
+
         <!-- paymentMethod KPI -->
         <PaymentMethodsKPI :paymentMethodKPIs="paymentMethodKPIs" />
     </div>
@@ -100,6 +100,13 @@ const highestSpendingCategory = computed(() => {
     return maxCategory;
 });
 
+const investments = computed(() => {
+    if (!transactionStore.allTransactions?.length) return 0;
+    return transactionStore.allTransactions
+        .filter(tx => tx.transactionType === 'Investments')
+        .reduce((sum, curr) => sum + curr.amount, 0);
+});
+
 const savingsRate = computed(() => {
     if (!transactionStore.allTransactions?.length) return 0;
 
@@ -116,12 +123,15 @@ const savingsRate = computed(() => {
         .filter(tx => tx.transactionType === 'Income')
         .reduce((sum, curr) => sum + curr.amount, 0);
 
-
     const totalExpenses = monthlyTransactions
         .filter(tx => tx.transactionType === 'Expense')
         .reduce((sum, curr) => sum + curr.amount, 0);
 
-    return totalIncome ? ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1) : 0;
+    const totalInvestments = monthlyTransactions
+        .filter(tx => tx.transactionType === 'Investment')
+        .reduce((sum, curr) => sum + curr.amount, 0);
+
+    return totalIncome ? ((totalIncome - totalExpenses - totalInvestments) / totalIncome * 100).toFixed(1) : 0;
 });
 
 const categoryGrowth = computed(() => {
@@ -173,9 +183,10 @@ const spendOnCategoriesMonthOnMonth = computed(() => {
 const paymentMethodKPIs = computed(() => {
     if (!transactionStore.allTransactions?.length) return [];
 
-    // Separate income and expense transactions
+    // Separate income, expense and investment transactions
     const incomeTransactions = transactionStore.allTransactions.filter(tx => tx.transactionType === 'Income');
     const expenseTransactions = transactionStore.allTransactions.filter(tx => tx.transactionType === 'Expense');
+    const investmentTransactions = transactionStore.allTransactions.filter(tx => tx.transactionType === 'Investment');
 
     const paymentMethodTotals = transactionStore.allTransactions.reduce((acc, curr) => {
         if (!acc[curr.paymentMethod]) {
@@ -183,12 +194,15 @@ const paymentMethodKPIs = computed(() => {
                 total: 0,
                 income: 0,
                 expense: 0,
+                investment: 0,
                 count: 0,
                 incomeCount: 0,
                 expenseCount: 0,
+                investmentCount: 0,
                 average: 0,
                 incomeAverage: 0,
                 expenseAverage: 0,
+                investmentAverage: 0,
                 utilizationRate: 0
             };
         }
@@ -196,13 +210,16 @@ const paymentMethodKPIs = computed(() => {
         if (curr.transactionType === 'Income') {
             acc[curr.paymentMethod].income += curr.amount;
             acc[curr.paymentMethod].incomeCount += 1;
-        } else {
+        } else if (curr.transactionType === 'Expense') {
             acc[curr.paymentMethod].expense += curr.amount;
             acc[curr.paymentMethod].expenseCount += 1;
+        } else if (curr.transactionType === 'Investment') {
+            acc[curr.paymentMethod].investment += curr.amount;
+            acc[curr.paymentMethod].investmentCount += 1;
         }
 
-        acc[curr.paymentMethod].total = acc[curr.paymentMethod].income - acc[curr.paymentMethod].expense;
-        acc[curr.paymentMethod].count = acc[curr.paymentMethod].incomeCount + acc[curr.paymentMethod].expenseCount;
+        acc[curr.paymentMethod].total = acc[curr.paymentMethod].income - acc[curr.paymentMethod].expense - acc[curr.paymentMethod].investment;
+        acc[curr.paymentMethod].count = acc[curr.paymentMethod].incomeCount + acc[curr.paymentMethod].expenseCount + acc[curr.paymentMethod].investmentCount;
 
         // Calculate averages
         acc[curr.paymentMethod].incomeAverage = acc[curr.paymentMethod].incomeCount ?

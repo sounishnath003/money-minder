@@ -13,22 +13,22 @@
                     :class="determineSign == '+' ? 'text-green-600' : 'text-red-600'"
                     @mouseenter="isBalanceVisible = true" @mouseleave="isBalanceVisible = false">
                     <span v-if="isBalanceVisible" class="transition-opacity duration-600">{{ INRRuppe.format(balance)
-                    }}</span>
+                        }}</span>
                     <span v-else class="transition-opacity duration-600">{{ '•'.repeat(INRRuppe.format(balance).length)
-                    }}</span>
+                        }}</span>
                 </span>
             </div>
-            <div class="grid grid-cols-2 gap-5">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
                 <div class="text-lg md:text-2xl font-medium" v-for="tx in spendByTransactionTypes"
                     :id="tx.transactionType">
                     {{ tx.transactionType }}&colon; <span class="font-semibold cursor-pointer flex items-center gap-2"
-                        :class="tx.transactionType === 'Income' ? 'text-green-600' : 'text-red-600'"
+                        :class="getTransactionTypeColor(tx.transactionType)"
                         @mouseenter="toggleAmountVisibility(tx.transactionType, true)"
                         @mouseleave="toggleAmountVisibility(tx.transactionType, false)">
                         <span v-if="isAmountVisible(tx.transactionType)" class="transition-opacity duration-600">{{
                             tx.amount }}</span>
-                        <span v-else class="transition-opacity duration-600">{{ 'X'.repeat(tx.amount.length - 3)
-                            }}</span>
+                        <span v-else class="transition-opacity duration-600">{{ 'X'.repeat(tx.amount.length - 4)
+                        }}</span>
                     </span>
                 </div>
             </div>
@@ -56,7 +56,8 @@ const transactions = computed(() => transactionStore.allTransactions);
 const isBalanceVisible = ref(false);
 const visibleAmounts = ref({
     Income: false,
-    Expense: false
+    Expense: false,
+    Investments: false
 });
 
 // Toggle functions
@@ -66,6 +67,20 @@ const toggleAmountVisibility = (type, isVisible) => {
 
 const isAmountVisible = (type) => {
     return visibleAmounts.value[type];
+};
+
+// Get color based on transaction type
+const getTransactionTypeColor = (type) => {
+    switch (type) {
+        case 'Income':
+            return 'text-green-600';
+        case 'Expense':
+            return 'text-red-600';
+        case 'Investments':
+            return 'text-blue-600';
+        default:
+            return '';
+    }
 };
 
 // On component mount fetch all transactions
@@ -80,7 +95,18 @@ onMounted(async () => {
 })
 
 // Computed properties
-const balance = computed(() => transactions.value.map((trans, index) => trans.transactionType === 'Income' ? trans.amount : -trans.amount).reduce((acc, curr) => acc + curr, 0).toFixed(2))
+const balance = computed(() => transactions.value.map((trans) => {
+    switch (trans.transactionType) {
+        case 'Income':
+            return trans.amount;
+        case 'Expense':
+            return -trans.amount;
+        case 'Investments':
+            return trans.amount;
+        default:
+            return 0;
+    }
+}).reduce((acc, curr) => acc + curr, 0).toFixed(2))
 
 // To determine the sign symbol and CSS
 const determineSign = computed(() => +balance.value >= 0 ? '+' : '-');
@@ -89,7 +115,8 @@ const determineSign = computed(() => +balance.value >= 0 ? '+' : '-');
 const spendByTransactionTypes = computed(() => {
     const summary = {
         'Income': 0,
-        'Expense': 0
+        'Expense': 0,
+        'Investments': 0
     };
 
     transactions.value.forEach((tx) => {
@@ -101,6 +128,7 @@ const spendByTransactionTypes = computed(() => {
     return [
         { transactionType: "Income", amount: INRRuppe.format(summary.Income), sign: '+' },
         { transactionType: "Expense", amount: INRRuppe.format(summary.Expense), sign: '-' },
+        { transactionType: "Investments", amount: INRRuppe.format(summary.Investments), sign: '+' }
     ]
 });
 

@@ -19,6 +19,7 @@
                         <option value="Select transaction type">Select transaction type</option>
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
+                        <option value="Investments">Investments</option>
                     </select>
                 </div>
                 <div class="mb-5">

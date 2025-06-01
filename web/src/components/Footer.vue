@@ -4,7 +4,7 @@
         <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
             <span>© 2025 Money Minder</span>
             <span class="hidden md:inline">&bull;</span>
-            <span>Version: d7971db</span>
+            <span>Version: c6615df</span>
             <span class="hidden md:inline">&bull;</span>
             <span>By <a href="https://github.com/sounishnath003" target="_blank"
                     class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Sounish Nath</a></span>
