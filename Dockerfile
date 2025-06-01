@@ -21,6 +21,10 @@ RUN npm install
 
 COPY web/ .
 
+# Add build argument for commit hash
+ARG VITE_COMMIT_HASH
+ENV VITE_COMMIT_HASH=$VITE_COMMIT_HASH
+
 RUN npm run build
 
 # -- And finally, build the final image

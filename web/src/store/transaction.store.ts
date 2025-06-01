@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+const COMMIT_HASH = import.meta.env.VITE_COMMIT_HASH || 'default-commit-hash-1.0.0';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `http://localhost:3000`;
 
 export interface Transaction {
@@ -17,6 +18,7 @@ export interface Transaction {
 
 export const useTransactionStore = defineStore('transactionState', {
     state: () => ({
+        commitHash: ref(COMMIT_HASH),
         startDate: ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, 0)),
         endDate: ref(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 0)),
         sitePassword: ref(import.meta.env.VITE_SECRET_PASSWORD),

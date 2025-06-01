@@ -30,7 +30,7 @@ build-all: build-backend build-frontend
 	docker images
 	echo "Removing old images"
 	echo "Building image"
-	docker build -t $(DockerImageName):$$(git rev-parse --short HEAD) -f Dockerfile .
+	docker build --build-arg VITE_COMMIT_HASH=$$(git rev-parse --short HEAD) -t $(DockerImageName):$$(git rev-parse --short HEAD) -f Dockerfile .
 	echo "Pushing to GCP"
 	gcloud auth configure-docker asia-south1-docker.pkg.dev
 	docker push $(DockerImageName):$$(git rev-parse --short HEAD)

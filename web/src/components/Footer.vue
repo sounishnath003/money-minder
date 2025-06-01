@@ -17,6 +17,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useTransactionStore } from '../store/transaction.store';
 
-const version = ref('ca575de');
+const transactionStore = useTransactionStore();
+
+const version = ref(transactionStore.commitHash);
 </script>
