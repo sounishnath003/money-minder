@@ -5,10 +5,11 @@ import "time"
 type PaymentMethod string
 
 const (
-	Cash        PaymentMethod = "Cash"
-	UPI         PaymentMethod = "UPI"
-	BankDeposit PaymentMethod = "Bank Deposit"
-	CreditCard  PaymentMethod = "Credit Card"
+	Cash         PaymentMethod = "Cash"
+	UPI          PaymentMethod = "UPI"
+	BankDeposit  PaymentMethod = "Bank Deposit"
+	CreditCard   PaymentMethod = "Credit Card"
+	BankTransfer PaymentMethod = "Bank Transfer"
 )
 
 type Transaction struct {

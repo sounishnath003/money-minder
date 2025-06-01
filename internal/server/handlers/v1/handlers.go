@@ -59,8 +59,9 @@ func GetAllPaymentMethodOptionsHandler(w http.ResponseWriter, r *http.Request) {
 	paymentMethods := []models.PaymentMethod{
 		models.UPI,
 		models.Cash,
-		models.BankDeposit,
 		models.CreditCard,
+		models.BankDeposit,
+		models.BankTransfer,
 	}
 
 	co.Logger.Printf("sending all available payment methods: %d", len(paymentMethods))
