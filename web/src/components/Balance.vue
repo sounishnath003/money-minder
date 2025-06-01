@@ -13,9 +13,9 @@
                     :class="determineSign == '+' ? 'text-green-600' : 'text-red-600'"
                     @mouseenter="isBalanceVisible = true" @mouseleave="isBalanceVisible = false">
                     <span v-if="isBalanceVisible" class="transition-opacity duration-600">{{ INRRuppe.format(balance)
-                        }}</span>
+                    }}</span>
                     <span v-else class="transition-opacity duration-600">{{ '•'.repeat(INRRuppe.format(balance).length)
-                        }}</span>
+                    }}</span>
                 </span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -28,7 +28,7 @@
                         <span v-if="isAmountVisible(tx.transactionType)" class="transition-opacity duration-600">{{
                             tx.amount }}</span>
                         <span v-else class="transition-opacity duration-600">{{ 'X'.repeat(tx.amount.length - 4)
-                        }}</span>
+                            }}</span>
                     </span>
                 </div>
             </div>
@@ -102,7 +102,7 @@ const balance = computed(() => transactions.value.map((trans) => {
         case 'Expense':
             return -trans.amount;
         case 'Investments':
-            return trans.amount;
+            return -trans.amount;
         default:
             return 0;
     }

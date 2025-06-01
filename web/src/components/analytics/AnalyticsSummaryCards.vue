@@ -11,7 +11,7 @@
                     highestSpendingCategory.category }}</p>
             <p class="text-sm text-gray-600">
                 {{ INRRuppe.format(highestSpendingCategory.amount) }}
-                <span class="text-xs">(excl. salary and house rents categories)</span>
+                <span class="text-xs">(excl. salary, house rents and mutual funds categories)</span>
             </p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
