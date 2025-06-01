@@ -17,8 +17,8 @@ export interface Transaction {
 
 export const useTransactionStore = defineStore('transactionState', {
     state: () => ({
-        startDate: ref(new Date(new Date().getFullYear(), new Date().getMonth(), 2)),
-        endDate: ref(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
+        startDate: ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, 0)),
+        endDate: ref(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 0)),
         sitePassword: ref(import.meta.env.VITE_SECRET_PASSWORD),
         addTransactionForm: {
             name: ref(''),
