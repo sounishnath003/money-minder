@@ -19,9 +19,9 @@
         <!-- Rest of the template remains unchanged -->
         <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Goal Details</h3>
+                <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Goal Details: ({{
+                    formData.goalType }})</h3>
                 <p class="font-semibold text-gray-900 dark:text-white">{{ formData.goalName }}</p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">{{ formData.goalType }}</p>
             </div>
             <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                 <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Cost</h3>
@@ -34,7 +34,7 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                 <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Time to Save</h4>
-                <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="grid md:grid-cols-4 grid-cols-2 gap-2 text-center">
                     <div>
                         <p class="text-lg font-bold text-blue-600 dark:text-white">{{ years.toFixed(1) }}</p>
                         <p class="text-xs text-gray-600 dark:text-gray-400">Years</p>
@@ -46,6 +46,10 @@
                     <div>
                         <p class="text-lg font-bold text-blue-600 dark:text-white">{{ weeks.toFixed(1) }}</p>
                         <p class="text-xs text-gray-600 dark:text-gray-400">Weeks</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold text-blue-600 dark:text-white">{{ (score / 10).toFixed(0) }}</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Impact</p>
                     </div>
                 </div>
             </div>
