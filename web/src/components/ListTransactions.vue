@@ -2,9 +2,13 @@
     <div>
         <div class="my-5">
             <h2 class="font-medium text-xl lg:text-3xl text-blue-600 dark:text-white">&bull; All transactions ({{
-                transactions.length
-                }})</h2>
+                filteredTransactions.length
+            }})</h2>
         </div>
+
+        <!-- Filters Section -->
+        <TransactionFilters :filters="filters" @clear-filters="clearFilters" />
+
         <div class="w-full overflow-x-auto">
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
@@ -72,48 +76,33 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between mt-4">
-            <div class="flex items-center">
-                <span class="text-sm text-gray-700 dark:text-gray-400">
-                    Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ transactions.length }} entries
-                </span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="cursor-pointer px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-700 disabled:opacity-50">
-                    Previous
-                </button>
-                <span class="text-sm text-gray-700 dark:text-gray-400">
-                    Page {{ currentPage }} of {{ totalPages }}
-                </span>
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="cursor-pointer px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-700 disabled:opacity-50">
-                    Next
-                </button>
-            </div>
-        </div>
+        <TransactionPagination :current-page="currentPage" :total-pages="totalPages" :start-index="startIndex"
+            :end-index="endIndex" :total-items="filteredTransactions.length" @previous-page="currentPage--"
+            @next-page="currentPage++" />
     </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useTransactionStore } from '../store/transaction.store';
+import { useTransactionFilters } from '../composables/useTransactionFilters';
+import TransactionFilters from './TransactionFilters.vue';
+import TransactionPagination from './TransactionPagination.vue';
 
 const transactionStore = useTransactionStore();
 const transactions = computed(() => transactionStore.allTransactions);
 
-// Pagination
-const itemsPerPage = 10;
-const currentPage = ref(1);
-
-const totalPages = computed(() => Math.ceil(transactions.value.length / itemsPerPage));
-
-const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage);
-const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, transactions.value.length));
-
-const paginatedTransactions = computed(() => {
-    return transactions.value.slice(startIndex.value, endIndex.value);
-});
+// Use the modular filtering composable
+const {
+    filters,
+    currentPage,
+    filteredTransactions,
+    totalPages,
+    startIndex,
+    endIndex,
+    paginatedTransactions,
+    clearFilters
+} = useTransactionFilters(transactions);
 
 const getCategoryName = (categoryId) => {
     const category = transactionStore.allCategories.find(cat => cat.id === Number(categoryId));
@@ -121,7 +110,6 @@ const getCategoryName = (categoryId) => {
 };
 
 // Utilities
-
 const getPaymentMethodColor = (paymentMethod) => {
     switch (paymentMethod) {
         case 'UPI':
@@ -136,12 +124,6 @@ const getPaymentMethodColor = (paymentMethod) => {
             return 'bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
     }
 };
-
-
-const USDollar = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-});
 
 const INRRuppe = new Intl.NumberFormat('en-IN', {
     style: 'currency',

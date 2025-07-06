@@ -16,6 +16,7 @@ const (
 		UserID=@UserID 
 		AND CreatedAt BETWEEN @FromDate AND @EndDate 
 		AND b.IsActive = true
+		AND b.Category NOT IN ('Salary')
   	GROUP BY b.Category
 	ORDER BY TotalAmount DESC, Category ASC
 	LIMIT 6;`
