@@ -6,6 +6,9 @@
             }})</h2>
         </div>
 
+        <!-- Transaction Summary -->
+        <TransactionSummary :transactions="filteredTransactions" />
+
         <!-- Filters Section -->
         <TransactionFilters :filters="filters" @clear-filters="clearFilters" />
 
@@ -88,6 +91,7 @@ import { useTransactionStore } from '../store/transaction.store';
 import { useTransactionFilters } from '../composables/useTransactionFilters';
 import TransactionFilters from './TransactionFilters.vue';
 import TransactionPagination from './TransactionPagination.vue';
+import TransactionSummary from './TransactionSummary.vue';
 
 const transactionStore = useTransactionStore();
 const transactions = computed(() => transactionStore.allTransactions);
