@@ -271,11 +271,12 @@ func (cbq *CustomBigQueryClient) GetSpendOnCategoriesMonthOnMonth(userId int, fr
 }
 
 type SpendOnCategoryByAllYearMonthAggregated struct {
-	Year         int    `json:"year"`
-	Month        int    `json:"month"`
-	MonthYearStr string `json:"monthYearStr"`
-	Category     string `json:"category"`
-	TotalAmount  int    `json:"totalAmount"`
+	Year          int    `json:"year"`
+	Month         int    `json:"month"`
+	MonthYearStr  string `json:"monthYearStr"`
+	Category      string `json:"category"`
+	PaymentMethod string `json:"paymentMethod"`
+	TotalAmount   int    `json:"totalAmount"`
 }
 
 // GetSpendOnCategoriesByAllYearMonthAggregated helps to get the spend on categories by all year month aggregated last 12 months.

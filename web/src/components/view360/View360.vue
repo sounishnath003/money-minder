@@ -10,7 +10,7 @@
         </div>
         <div class="text-sm text-gray-600 dark:text-gray-400 mb-6 lg:text-left text-center">
             Look back at your income and expenses by year,
-            month, and category. Where did your money go?
+            month, category, and payment method. Where did your money go?
         </div>
         <div class="w-full mx-auto p-4 flex flex-col gap-10">
 
@@ -29,6 +29,11 @@
                 <select v-model="selectedCategory" :class="formInputCss">
                     <option value="">All Categories</option>
                     <option v-for="cat in allCategories" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
+                <label class="text-gray-600 dark:text-gray-300 font-medium ml-2">Payment Method:</label>
+                <select v-model="selectedPaymentMethod" :class="formInputCss">
+                    <option value="">All Payment Methods</option>
+                    <option v-for="pay in allPaymentMethods" :key="pay" :value="pay">{{ pay }}</option>
                 </select>
             </div>
 
@@ -215,21 +220,27 @@
                                     Category</th>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Payment Method</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Total Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="row in filteredData" :key="`${row.year}-${row.month}-${row.category}`"
+                            <tr v-for="row in filteredData"
+                                :key="`${row.year}-${row.month}-${row.category}-${row.paymentMethod}`"
                                 class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.year }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.monthYearStr }}
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.category }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.paymentMethod ||
+                                    '-' }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
                                     INRRuppe.format(row.totalAmount) }}</td>
                             </tr>
                             <tr v-if="filteredData.length === 0">
-                                <td colspan="4" class="px-4 py-2 text-center text-gray-400">No data available for the
+                                <td colspan="5" class="px-4 py-2 text-center text-gray-400">No data available for the
                                     selected filters.</td>
                             </tr>
                         </tbody>
@@ -302,7 +313,9 @@ const months = [
 const selectedYear = ref('');
 const selectedMonth = ref('');
 const selectedCategory = ref('');
+const selectedPaymentMethod = ref('');
 const allCategories = ref([]);
+const allPaymentMethods = ref([]);
 const allYears = ref([]);
 const isLoading = ref(true);
 
@@ -311,6 +324,8 @@ onMounted(async () => {
     // Extract unique categories and years, excluding income categories
     const cats = Array.from(new Set(transactionStore.spendOnCategoriesByAllYearMonthAggregated.map(d => d.category)));
     allCategories.value = cats.filter(cat => !INCOME_CATEGORIES.includes(cat));
+    const pays = Array.from(new Set(transactionStore.spendOnCategoriesByAllYearMonthAggregated.map(d => d.paymentMethod)));
+    allPaymentMethods.value = pays;
     const years = Array.from(new Set(transactionStore.spendOnCategoriesByAllYearMonthAggregated.map(d => d.year)));
     allYears.value = years.sort((a, b) => b - a);
     selectedYear.value = allYears.value[0] || '';
@@ -329,6 +344,9 @@ const filteredData = computed(() => {
     if (selectedCategory.value) {
         data = data.filter(d => d.category === selectedCategory.value);
     }
+    if (selectedPaymentMethod.value) {
+        data = data.filter(d => d.paymentMethod === selectedPaymentMethod.value);
+    }
     // Exclude income categories from expenses
     return data.filter(d => !INCOME_CATEGORIES.includes(d.category));
 });
@@ -341,6 +359,9 @@ const incomeData = computed(() => {
     }
     if (selectedMonth.value) {
         data = data.filter(d => d.month === Number(selectedMonth.value));
+    }
+    if (selectedPaymentMethod.value) {
+        data = data.filter(d => d.paymentMethod === selectedPaymentMethod.value);
     }
     return data;
 });
@@ -483,8 +504,8 @@ watch(
     () => allMonthYearStrs.value,
     (months) => {
         if (months.length && (!compareMonth1.value || !compareMonth2.value)) {
-            compareMonth1.value = months[0];
-            compareMonth2.value = months[months.length - 1];
+            compareMonth1.value = months[1]; // Older month
+            compareMonth2.value = months[0]; // Newer month
         }
     },
     { immediate: true }

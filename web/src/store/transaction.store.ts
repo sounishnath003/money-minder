@@ -35,7 +35,7 @@ export const useTransactionStore = defineStore('transactionState', {
         paymentMethods: ref<string[]>([]),
         totalDailySpends: ref<{ unixMiliseconds: number, amount: number }[]>([]),
         spendOnCategoriesMonthOnMonth: ref<{ month: string, category: string, totalSpendAmount: number }[]>([]),
-        spendOnCategoriesByAllYearMonthAggregated: ref<{ year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[]>([]),
+        spendOnCategoriesByAllYearMonthAggregated: ref<{ year: number, month: number, monthYearStr: string, category: string, paymentMethod: string, totalAmount: number }[]>([]),
     }),
     actions: {
         async getAllCategories() {
@@ -178,7 +178,7 @@ export const useTransactionStore = defineStore('transactionState', {
             }
 
             const data = await resp.json();
-            this.spendOnCategoriesByAllYearMonthAggregated = data.data as { year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[];
+            this.spendOnCategoriesByAllYearMonthAggregated = data.data as { year: number, month: number, monthYearStr: string, category: string, paymentMethod: string, totalAmount: number }[];
             return data.data as { year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[];
         },
         async createTransaction() {
