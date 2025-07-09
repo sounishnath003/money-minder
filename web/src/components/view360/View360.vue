@@ -79,7 +79,7 @@
                         topCategory.category || 'N/A' }}</div>
                     <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(topCategory.totalAmount ||
                         0)
-                    }}</div>
+                        }}</div>
                 </div>
                 <div
                     class="bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
@@ -145,15 +145,21 @@
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
                 <div class="flex flex-col md:flex-row gap-4 mb-4 items-center">
                     <div>
+                        <label class="font-medium text-gray-700 dark:text-gray-300 mr-2">Year:</label>
+                        <select v-model="compareYear" :class="formInputCss">
+                            <option v-for="y in allYearsForComparison" :key="y" :value="y">{{ y }}</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="font-medium text-gray-700 dark:text-gray-300 mr-2">Older Month:</label>
                         <select v-model="compareMonth1" :class="formInputCss">
-                            <option v-for="m in allMonthYearStrs" :key="m" :value="m">{{ m }}</option>
+                            <option v-for="m in monthsForYear" :key="m" :value="m">{{ getMonthName(m) }}</option>
                         </select>
                     </div>
                     <div>
                         <label class="font-medium text-gray-700 dark:text-gray-300 mr-2">Newer Month:</label>
                         <select v-model="compareMonth2" :class="formInputCss">
-                            <option v-for="m in allMonthYearStrs" :key="m" :value="m">{{ m }}</option>
+                            <option v-for="m in monthsForYear" :key="m" :value="m">{{ getMonthName(m) }}</option>
                         </select>
                     </div>
                 </div>
@@ -166,10 +172,10 @@
                                     Category</th>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ compareMonth1 }}</th>
+                                    {{ getMonthName(compareMonth1) }}</th>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ compareMonth2 }}</th>
+                                    {{ getMonthName(compareMonth2) }}</th>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Growth/Decrease (%)</th>
@@ -262,7 +268,7 @@
                                 class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
                             <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
                             <span class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ cat.category
-                            }}</span>
+                                }}</span>
                         </div>
                         <div class="text-xl md:text-3xl font-semibold mb-1"
                             :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
@@ -492,19 +498,41 @@ const barSeriesCategory = computed(() => {
 });
 
 // --- Comparison Section ---
-const allMonthYearStrs = computed(() => {
-    // All unique monthYearStrs in filteredData
-    return Array.from(new Set(filteredData.value.map(d => d.monthYearStr))).sort();
+const allYearsForComparison = computed(() => {
+    // All unique years in filteredData
+    return Array.from(new Set(filteredData.value.map(d => d.year))).sort((a, b) => b - a);
 });
+const compareYear = ref('');
+
+// Auto-select current year by default for compareYear
+watch(
+    allYearsForComparison,
+    (years) => {
+        if (years.length && !compareYear.value) {
+            const currentYear = new Date().getFullYear();
+            compareYear.value = years.includes(currentYear) ? currentYear : years[0];
+        }
+    },
+    { immediate: true }
+);
+
+const monthsForYear = computed(() => {
+    if (!compareYear.value) return [];
+    // All unique monthYearStrs for the selected year
+    return Array.from(new Set(filteredData.value.filter(d => d.year === Number(compareYear.value)).map(d => d.monthYearStr))).sort();
+});
+
 const compareMonth1 = ref('');
 const compareMonth2 = ref('');
 
-// Set defaults after data loads
+// Set defaults after data loads or year changes
 watch(
-    () => allMonthYearStrs.value,
-    (months) => {
-        if (months.length && (!compareMonth1.value || !compareMonth2.value)) {
+    [() => monthsForYear.value, () => compareYear.value],
+    ([months]) => {
+        if (months.length && (!compareMonth1.value || !months.includes(compareMonth1.value))) {
             compareMonth1.value = months[1]; // Older month
+        }
+        if (months.length && (!compareMonth2.value || !months.includes(compareMonth2.value))) {
             compareMonth2.value = months[0]; // Newer month
         }
     },
@@ -513,10 +541,10 @@ watch(
 
 const comparisonTable = computed(() => {
     // For each unique category, get spend in both months and compute % change
-    const categories = Array.from(new Set(filteredData.value.map(d => d.category)));
+    const categories = Array.from(new Set(filteredData.value.filter(d => d.year === Number(compareYear.value)).map(d => d.category)));
     return categories.map(cat => {
-        const m1 = filteredData.value.find(d => d.category === cat && d.monthYearStr === compareMonth1.value);
-        const m2 = filteredData.value.find(d => d.category === cat && d.monthYearStr === compareMonth2.value);
+        const m1 = filteredData.value.find(d => d.category === cat && d.monthYearStr === compareMonth1.value && d.year === Number(compareYear.value));
+        const m2 = filteredData.value.find(d => d.category === cat && d.monthYearStr === compareMonth2.value && d.year === Number(compareYear.value));
         const val1 = m1 ? m1.totalAmount : 0;
         const val2 = m2 ? m2.totalAmount : 0;
         let percent = null;
@@ -531,6 +559,14 @@ const comparisonTable = computed(() => {
         };
     });
 });
+
+function getMonthName(monthYearStr) {
+    // monthYearStr is like '2024-01', '2024-02', etc.
+    const parts = monthYearStr.split('-');
+    if (parts.length !== 2) return monthYearStr;
+    const monthIdx = Number(parts[1]) - 1;
+    return months[monthIdx] || monthYearStr;
+}
 
 // New computed property for excluded category summaries
 const excludedCategorySummaries = computed(() => {
