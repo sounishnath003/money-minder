@@ -189,10 +189,10 @@
                                     INRRuppe.format(row.month1) }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
                                     INRRuppe.format(row.month2) }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-medium">
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-semibold">
                                     <span v-if="row.percent === null">-</span>
                                     <span v-else
-                                        :class="row.percent > 0 ? 'text-green-600' : row.percent < 0 ? 'text-red-600' : ''">
+                                        :class="row.percent > 0 ? 'text-red-600' : row.percent < 0 ? 'text-green-600' : ''">
                                         {{ row.percent > 0 ? '+' : '' }}{{ row.percent.toFixed(2) }}%
                                         <span v-if="row.percent > 0">&uparrow;</span>
                                         <span v-else-if="row.percent < 0">&downarrow;</span>

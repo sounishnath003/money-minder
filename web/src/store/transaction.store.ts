@@ -21,6 +21,9 @@ export const useTransactionStore = defineStore('transactionState', {
         commitHash: ref(COMMIT_HASH),
         startDate: ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, 0)),
         endDate: ref(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 0)),
+        currentMonth: ref(
+            `${new Date().toLocaleString('default', { month: 'long' })}-${new Date().getFullYear()}`
+        ),
         sitePassword: ref(import.meta.env.VITE_SECRET_PASSWORD),
         addTransactionForm: {
             name: ref(''),

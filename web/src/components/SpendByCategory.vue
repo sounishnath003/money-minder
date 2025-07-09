@@ -1,6 +1,6 @@
 <template>
     <div class="text-xl text-center my-2 font-medium text-blue-600 dark:text-white"><span>&bull; Total spend in current
-            month</span>
+            month (<span class="font-semibold">{{ currentMonth }}</span>)</span>
     </div>
     <div class="w-full overflow-x-auto">
         <div class="min-w-full">
@@ -42,7 +42,7 @@ import { computed } from 'vue';
 const transactionStore = useTransactionStore();
 
 const spendByCategories = computed(() => transactionStore.allSpendsByCategories);
-
+const currentMonth = computed(() => transactionStore.currentMonth);
 
 // Utilities
 const USDollar = new Intl.NumberFormat('en-US', {
