@@ -34,15 +34,19 @@ Money Minder is a personal finance management application that helps users track
   - BigQuery for analytics and reporting
   - Cloud Monitoring for observability
 
-  ### All transactions:
+### All transactions:
+
+Transactions - 1
 ![home-light](assets/transactions.png)
+
+Transactions - 2
+![home-light](assets/transactions-2.png)
 
 ### Data Analytics
 - BigQuery for financial data analysis
 - Custom SQL queries for transaction insights
 - Data visualization using BigQuery ML
 - Automated reporting and trend analysis
-
 
 ### Analytics Section - 1:
 ![home-light](assets/analytics-1.png)
@@ -52,6 +56,19 @@ Money Minder is a personal finance management application that helps users track
 
 ### Analytics Section - 3:
 ![home-light](assets/analytics-3.png)
+
+
+## Everything Section 
+
+Look back your expenses Year by year and MoM drill down.
+
+### Intellegent Summary Cards:
+![e1](assets/everything-1.png)
+
+
+### Compare your expenses Month v/s Month:
+![e1](assets/everything-2.png)
+
 
 ### Author Information
 - **Name:** Sounish Nath
