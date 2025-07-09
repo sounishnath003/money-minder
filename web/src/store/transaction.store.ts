@@ -88,7 +88,7 @@ export const useTransactionStore = defineStore('transactionState', {
                     createdAt: new Date(tx.createdAt)
                 }));
                 // Update spend by categories
-                await this.getAllSpendsByCategories();
+                Promise.all([this.getAllSpendsByCategories(), this.getSpendOnCategoriesByAllYearMonthAggregated()])
                 return data.data as Transaction[];
             } catch (error) {
                 console.error('Failed to fetch transactions:', error);
@@ -226,9 +226,7 @@ export const useTransactionStore = defineStore('transactionState', {
                 this.getTransactions(),
                 this.getAllSpendsByCategories(),
                 this.getDailyTotalSpendByTimeframe(),
-            ]).then(() => {
-                console.log('transactions and spends by categories updated.');
-            }).catch((error) => {
+            ]).catch((error) => {
                 console.error('Failed to update transactions and spends by categories:', error);
             });
         },

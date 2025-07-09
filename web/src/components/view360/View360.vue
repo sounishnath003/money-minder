@@ -1,206 +1,218 @@
 <template>
-    <!-- Friendly Heading -->
-    <div class="text-2xl font-medium mb-3 lg:text-left text-center">
-        <b class="text-blue-600">Money Minder Analytics: </b>Your Year in Review
+    <div v-if="isLoading" class="text-center my-auto font-medium py-4">
+        Loading...
     </div>
-    <div class="text-sm text-gray-600 dark:text-gray-400 mb-6 lg:text-left text-center">
-        Look back at your income and expenses by year,
-        month, and category. Where did your money go?
-    </div>
-    <div class="w-full mx-auto p-4 flex flex-col gap-10">
 
-        <!-- Drilldown Controls -->
-        <div class="flex flex-col md:flex-row md:items-center gap-4 mb-2">
-            <label class="text-gray-600 dark:text-gray-300 font-medium">Year:</label>
-            <select v-model="selectedYear" :class="formInputCss">
-                <option v-for="year in allYears" :key="year" :value="year">{{ year }}</option>
-            </select>
-            <label class="text-gray-600 dark:text-gray-300 font-medium ml-2">Month:</label>
-            <select v-model="selectedMonth" :class="formInputCss">
-                <option value="">All</option>
-                <option v-for="(month, idx) in months" :key="month" :value="idx + 1">{{ month }}</option>
-            </select>
-            <label class="text-gray-600 dark:text-gray-300 font-medium ml-2">Category:</label>
-            <select v-model="selectedCategory" :class="formInputCss">
-                <option value="">All Categories</option>
-                <option v-for="cat in allCategories" :key="cat" :value="cat">{{ cat }}</option>
-            </select>
+    <template v-else>
+        <!-- Friendly Heading -->
+        <div class="text-2xl font-medium mb-3 lg:text-left text-center">
+            <b class="text-blue-600">Money Minder Analytics: </b>Your Year in Review
         </div>
+        <div class="text-sm text-gray-600 dark:text-gray-400 mb-6 lg:text-left text-center">
+            Look back at your income and expenses by year,
+            month, and category. Where did your money go?
+        </div>
+        <div class="w-full mx-auto p-4 flex flex-col gap-10">
 
-        <!-- Summary Cards -->
-        <div class="text-lg md:text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            &bull; Yearly & Monthly Financial Summary
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8 w-full">
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Income</h3>
-                <p class="text-2xl font-bold text-green-700">{{ INRRuppe.format(totalIncome) }}</p>
+            <!-- Drilldown Controls -->
+            <div class="flex flex-col md:flex-row md:items-center gap-4 mb-2">
+                <label class="text-gray-600 dark:text-gray-300 font-medium">Year:</label>
+                <select v-model="selectedYear" :class="formInputCss">
+                    <option v-for="year in allYears" :key="year" :value="year">{{ year }}</option>
+                </select>
+                <label class="text-gray-600 dark:text-gray-300 font-medium ml-2">Month:</label>
+                <select v-model="selectedMonth" :class="formInputCss">
+                    <option value="">All</option>
+                    <option v-for="(month, idx) in months" :key="month" :value="idx + 1">{{ month }}</option>
+                </select>
+                <label class="text-gray-600 dark:text-gray-300 font-medium ml-2">Category:</label>
+                <select v-model="selectedCategory" :class="formInputCss">
+                    <option value="">All Categories</option>
+                    <option v-for="cat in allCategories" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
             </div>
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Expense</h3>
-                <p class="text-2xl font-bold text-red-600">{{ INRRuppe.format(totalSpend) }}</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Net. Savings</h3>
-                <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(netSavings) }}</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Avg. Monthly Spend</h3>
-                <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(avgMonthlySpend) }}</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Avg. Daily Spend</h3>
-                <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(avgMonthlySpend / 30) }}</p>
-            </div>
-        </div>
 
-        <div class="text-lg md:text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            &bull; Look at your expense summaries
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div
-                class="bg-gradient-to-br from-red-100 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-red-200 dark:border-red-700 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-2xl text-red-500 dark:text-red-400">🔥</span>
-                    <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Top Expense Category</span>
-                </div>
-                <div class="text-2xl font-semibold text-red-600 dark:text-red-400 mb-0.5 tracking-tight">{{
-                    topCategory.category || 'N/A' }}</div>
-                <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(topCategory.totalAmount || 0)
-                }}</div>
+            <!-- Summary Cards -->
+            <div class="text-lg md:text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                &bull; Yearly & Monthly Financial Summary
             </div>
-            <div
-                class="bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-2xl text-blue-500 dark:text-blue-400">💧</span>
-                    <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Lowest Expense
-                        Category</span>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8 w-full">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Income</h3>
+                    <p class="text-2xl font-bold text-green-700">{{ INRRuppe.format(totalIncome) }}</p>
                 </div>
-                <div class="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-0.5 tracking-tight">{{
-                    lowestCategory.category || 'N/A' }}</div>
-                <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(lowestCategory.totalAmount ||
-                    0) }}</div>
-            </div>
-            <div
-                class="bg-gradient-to-br from-green-100 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-green-200 dark:border-green-700 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-2xl text-green-500 dark:text-green-400">📊</span>
-                    <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Most Consistent
-                        Expense</span>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Expense</h3>
+                    <p class="text-2xl font-bold text-red-600">{{ INRRuppe.format(totalSpend) }}</p>
                 </div>
-                <div class="text-2xl font-semibold text-green-600 dark:text-green-400 mb-0.5 tracking-tight">{{
-                    mostConsistentCategory.category || 'N/A' }}</div>
-                <div class="text-sm text-gray-600 dark:text-gray-300">Std: {{ mostConsistentCategory.std ?
-                    mostConsistentCategory.std.toFixed(2) : '-' }}</div>
-            </div>
-            <div
-                class="bg-gradient-to-br from-purple-100 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-purple-200 dark:border-purple-700 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-2xl text-purple-500 dark:text-purple-400">🏆</span>
-                    <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Highest Single Month
-                        Expense</span>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Net. Savings</h3>
+                    <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(netSavings) }}</p>
                 </div>
-                <div class="text-2xl font-semibold text-purple-600 dark:text-purple-400 mb-0.5 tracking-tight">{{
-                    highestSingleMonth.category || 'N/A' }}</div>
-                <div class="text-sm text-gray-600 dark:text-gray-300">
-                    <span>{{ highestSingleMonth.monthYearStr || '-' }}</span>
-                    <br>
-                    <span>{{ INRRuppe.format(highestSingleMonth.totalAmount || 0) }}</span>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Avg. Monthly Spend</h3>
+                    <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(avgMonthlySpend) }}</p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Avg. Daily Spend</h3>
+                    <p class="text-2xl font-bold text-blue-600">{{ INRRuppe.format(avgMonthlySpend / 30) }}</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Expense Bar Chart(s) -->
-        <div v-if="selectedCategory === ''" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
-            <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">{{ `Expense by Category
-                (${INCOME_CATEGORIES.join(', ')})` }}
+            <div class="text-lg md:text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                &bull; Look at your expense summaries
             </div>
-            <BarChart :categories="barCategories" :series="barSeriesAll" />
-        </div>
-        <div v-else class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
-            <div class="mb-2 text-lg font-medium text-blue-600 dark:text-white">{{ selectedCategory }} - Expense Over
-                Time</div>
-            <BarChart :categories="barMonths" :series="barSeriesCategory" />
-        </div>
-
-        <!-- Table View of Aggregated Data -->
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mt-8 overflow-x-auto">
-            <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">Detailed Data Table</div>
-            <div class="max-h-[350px] overflow-y-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="sticky top-0 bg-white dark:bg-gray-800 z-10">
-                        <tr>
-                            <th
-                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Year</th>
-                            <th
-                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Month</th>
-                            <th
-                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Category</th>
-                            <th
-                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="row in filteredData" :key="`${row.year}-${row.month}-${row.category}`"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.year }}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ months[row.month - 1] ||
-                                row.month }}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.category }}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
-                                INRRuppe.format(row.totalAmount) }}</td>
-                        </tr>
-                        <tr v-if="filteredData.length === 0">
-                            <td colspan="4" class="px-4 py-2 text-center text-gray-400">No data available for the
-                                selected filters.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Excluded Categories Section (Income & Portfolio) -->
-        <div v-if="excludedCategorySummaries.length" class="mt-8">
-            <h2 class="text-2xl font-semibold text-blue-600 dark:text-white mb-4">&bull; Income & Portfolio Overview
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div v-for="cat in excludedCategorySummaries" :key="cat.category"
-                    class="bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-4 shadow-lg flex flex-col items-center border border-green-200 dark:border-green-700 hover:scale-105 transition-transform duration-200">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div
+                    class="bg-gradient-to-br from-red-100 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-red-200 dark:border-red-700 hover:scale-105 transition-transform duration-200">
                     <div class="flex items-center gap-2 mb-1">
-                        <span v-if="cat.category === 'Salary'"
-                            class="text-green-600 dark:text-green-400 text-2xl">💰</span>
-                        <span v-else-if="cat.category.toLowerCase().includes('mutual')"
-                            class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
-                        <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
-                        <span class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ cat.category }}</span>
+                        <span class="text-2xl text-red-500 dark:text-red-400">🔥</span>
+                        <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Top Expense
+                            Category</span>
                     </div>
-                    <div class="text-xl md:text-3xl font-semibold mb-1"
-                        :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
-                        {{ INRRuppe.format(cat.total) }}
+                    <div class="text-2xl font-semibold text-red-600 dark:text-red-400 mb-0.5 tracking-tight">{{
+                        topCategory.category || 'N/A' }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(topCategory.totalAmount ||
+                        0)
+                        }}</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl text-blue-500 dark:text-blue-400">💧</span>
+                        <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Lowest Expense
+                            Category</span>
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-300 mb-1">Total for selected period</div>
-                    <div class="flex flex-col items-center w-full">
-                        <div v-if="cat.timeline.length" class="text-xs text-gray-500 dark:text-gray-300">
-                            Last month:
-                            <span class="font-semibold text-gray-700 dark:text-gray-200">
-                                {{
-                                    (() => {
-                                        const last = cat.timeline[cat.timeline.length - 1];
-                                        return last ? INRRuppe.format(last.totalAmount) : '-';
-                                    })()
-                                }}
-                            </span>
+                    <div class="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-0.5 tracking-tight">{{
+                        lowestCategory.category || 'N/A' }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(lowestCategory.totalAmount
+                        ||
+                        0) }}</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-green-100 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-green-200 dark:border-green-700 hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl text-green-500 dark:text-green-400">📊</span>
+                        <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Most Consistent
+                            Expense</span>
+                    </div>
+                    <div class="text-2xl font-semibold text-green-600 dark:text-green-400 mb-0.5 tracking-tight">{{
+                        mostConsistentCategory.category || 'N/A' }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">Std: {{ mostConsistentCategory.std ?
+                        mostConsistentCategory.std.toFixed(2) : '-' }}</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-purple-100 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-purple-200 dark:border-purple-700 hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl text-purple-500 dark:text-purple-400">🏆</span>
+                        <span class="text-base font-semibold text-gray-800 dark:text-gray-100">Highest Single Month
+                            Expense</span>
+                    </div>
+                    <div class="text-2xl font-semibold text-purple-600 dark:text-purple-400 mb-0.5 tracking-tight">{{
+                        highestSingleMonth.category || 'N/A' }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">
+                        <span>{{ highestSingleMonth.monthYearStr || '-' }}</span>
+                        <br>
+                        <span>{{ INRRuppe.format(highestSingleMonth.totalAmount || 0) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expense Bar Chart(s) -->
+            <div v-if="selectedCategory === ''" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
+                <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">{{ `Expense by Category
+                    (${INCOME_CATEGORIES.join(', ')})` }}
+                </div>
+                <BarChart :categories="barCategories" :series="barSeriesAll" />
+            </div>
+            <div v-else class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
+                <div class="mb-2 text-lg font-medium text-blue-600 dark:text-white">{{ selectedCategory }} - Expense
+                    Over
+                    Time</div>
+                <BarChart :categories="barMonths" :series="barSeriesCategory" />
+            </div>
+
+            <!-- Table View of Aggregated Data -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mt-8 overflow-x-auto">
+                <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">Detailed Data Table</div>
+                <div class="max-h-[350px] overflow-y-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="sticky top-0 bg-white dark:bg-gray-800 z-10">
+                            <tr>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Year</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Month</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Category</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="row in filteredData" :key="`${row.year}-${row.month}-${row.category}`"
+                                class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.year }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ months[row.month - 1]
+                                    ||
+                                    row.month }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.category }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
+                                    INRRuppe.format(row.totalAmount) }}</td>
+                            </tr>
+                            <tr v-if="filteredData.length === 0">
+                                <td colspan="4" class="px-4 py-2 text-center text-gray-400">No data available for the
+                                    selected filters.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Excluded Categories Section (Income & Portfolio) -->
+            <div v-if="excludedCategorySummaries.length" class="mt-8">
+                <h2 class="text-2xl font-semibold text-blue-600 dark:text-white mb-4">&bull; Income & Portfolio Overview
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div v-for="cat in excludedCategorySummaries" :key="cat.category"
+                        class="bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-4 shadow-lg flex flex-col items-center border border-green-200 dark:border-green-700 hover:scale-105 transition-transform duration-200">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span v-if="cat.category === 'Salary'"
+                                class="text-green-600 dark:text-green-400 text-2xl">💰</span>
+                            <span v-else-if="cat.category.toLowerCase().includes('mutual')"
+                                class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
+                            <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
+                            <span class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ cat.category
+                                }}</span>
                         </div>
-                        <div v-else class="text-xs text-gray-400 dark:text-gray-500">No monthly data</div>
+                        <div class="text-xl md:text-3xl font-semibold mb-1"
+                            :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
+                            {{ INRRuppe.format(cat.total) }}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-300 mb-1">Total for selected period</div>
+                        <div class="flex flex-col items-center w-full">
+                            <div v-if="cat.timeline.length" class="text-xs text-gray-500 dark:text-gray-300">
+                                Last month:
+                                <span class="font-semibold text-gray-700 dark:text-gray-200">
+                                    {{
+                                        (() => {
+                                            const last = cat.timeline[cat.timeline.length - 1];
+                                            return last ? INRRuppe.format(last.totalAmount) : '-';
+                                        })()
+                                    }}
+                                </span>
+                            </div>
+                            <div v-else class="text-xs text-gray-400 dark:text-gray-500">No monthly data</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </template>
 
 <script setup>
@@ -228,6 +240,7 @@ const selectedMonth = ref('');
 const selectedCategory = ref('');
 const allCategories = ref([]);
 const allYears = ref([]);
+const isLoading = ref(true);
 
 onMounted(async () => {
     await transactionStore.getSpendOnCategoriesByAllYearMonthAggregated();
@@ -237,6 +250,7 @@ onMounted(async () => {
     const years = Array.from(new Set(transactionStore.spendOnCategoriesByAllYearMonthAggregated.map(d => d.year)));
     allYears.value = years.sort((a, b) => b - a);
     selectedYear.value = allYears.value[0] || '';
+    isLoading.value = false;
 });
 
 // Filtered data for expenses (excluding income categories)
