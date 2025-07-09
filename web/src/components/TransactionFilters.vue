@@ -30,6 +30,18 @@
                     </div>
                 </div>
 
+                <!-- Category Filter -->
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                    <select v-model="filters.categoryID"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Categories</option>
+                        <option v-for="category in categories" :key="category.id" :value="category.id">
+                            {{ category.category }}
+                        </option>
+                    </select>
+                </div>
+
                 <!-- Payment Method Filter -->
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment
@@ -61,18 +73,6 @@
                     </div>
                 </div>
 
-                <!-- Transaction Type Filter -->
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Transaction
-                        Type</label>
-                    <select v-model="filters.transactionType"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Types</option>
-                        <option value="Income">Income</option>
-                        <option value="Expense">Expense</option>
-                    </select>
-                </div>
-
                 <!-- Clear Filters Button -->
                 <div class="flex items-end">
                     <button @click="$emit('clear-filters')"
@@ -91,6 +91,10 @@ import { ref } from 'vue';
 defineProps({
     filters: {
         type: Object,
+        required: true
+    },
+    categories: {
+        type: Array,
         required: true
     }
 });

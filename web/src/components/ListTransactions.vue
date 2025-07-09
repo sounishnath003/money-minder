@@ -3,14 +3,15 @@
         <div class="my-5">
             <h2 class="font-medium text-xl lg:text-3xl text-blue-600 dark:text-white">&bull; All transactions ({{
                 filteredTransactions.length
-            }})</h2>
+                }})</h2>
         </div>
 
         <!-- Transaction Summary -->
         <TransactionSummary :transactions="filteredTransactions" />
 
         <!-- Filters Section -->
-        <TransactionFilters :filters="filters" @clear-filters="clearFilters" />
+        <TransactionFilters :filters="filters" :categories="transactionStore.allCategories"
+            @clear-filters="clearFilters" />
 
         <div class="w-full overflow-x-auto">
             <div class="min-w-full inline-block align-middle">

@@ -6,7 +6,7 @@ export function useTransactionFilters(transactions) {
         startDate: '',
         endDate: '',
         paymentMethod: [],
-        transactionType: ''
+        categoryID: '' // Added category filter
     });
 
     // Pagination state
@@ -19,7 +19,7 @@ export function useTransactionFilters(transactions) {
             startDate: '',
             endDate: '',
             paymentMethod: [],
-            transactionType: ''
+            categoryID: '' // Reset category filter
         };
         currentPage.value = 1; // Reset to first page when clearing filters
     };
@@ -42,8 +42,8 @@ export function useTransactionFilters(transactions) {
                 return false;
             }
 
-            // Transaction type filter
-            if (filters.value.transactionType && transaction.transactionType !== filters.value.transactionType) {
+            // Category filter
+            if (filters.value.categoryID && transaction.categoryID !== Number(filters.value.categoryID)) {
                 return false;
             }
 
