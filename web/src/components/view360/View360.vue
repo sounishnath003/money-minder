@@ -183,6 +183,9 @@
                                     <span v-else
                                         :class="row.percent > 0 ? 'text-green-600' : row.percent < 0 ? 'text-red-600' : ''">
                                         {{ row.percent > 0 ? '+' : '' }}{{ row.percent.toFixed(2) }}%
+                                        <span v-if="row.percent > 0">&uparrow;</span>
+                                        <span v-else-if="row.percent < 0">&downarrow;</span>
+                                        <span v-else>&nbsp;</span>
                                     </span>
                                 </td>
                             </tr>
