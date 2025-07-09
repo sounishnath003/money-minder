@@ -67,7 +67,7 @@
                 <div class="text-2xl font-semibold text-red-600 dark:text-red-400 mb-0.5 tracking-tight">{{
                     topCategory.category || 'N/A' }}</div>
                 <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(topCategory.totalAmount || 0)
-                    }}</div>
+                }}</div>
             </div>
             <div
                 class="bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
@@ -110,37 +110,6 @@
             </div>
         </div>
 
-        <!-- Excluded Categories Section (Income & Portfolio) -->
-        <div v-if="excludedCategorySummaries.length" class="mt-8">
-            <h2 class="text-2xl font-semibold text-blue-600 dark:text-white mb-4">Income & Portfolio Overview</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div v-for="cat in excludedCategorySummaries" :key="cat.category"
-                    class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow flex flex-col items-center border border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span v-if="cat.category === 'Salary'"
-                            class="text-green-600 dark:text-green-400 text-2xl">💰</span>
-                        <span v-else-if="cat.category.toLowerCase().includes('mutual')"
-                            class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
-                        <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
-                        <span class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ cat.category }}</span>
-                    </div>
-                    <div class="text-3xl font-bold mb-2"
-                        :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
-                        {{ INRRuppe.format(cat.total) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-300 mb-2">Total for selected period</div>
-                    <div v-if="cat.timeline.length" class="w-full">
-                        <div class="text-xs text-gray-500 dark:text-gray-300 mb-1">Timeline:</div>
-                        <ul class="text-sm text-gray-700 dark:text-gray-200">
-                            <li v-for="item in cat.timeline" :key="item.monthYearStr">
-                                <span class="font-semibold">{{ item.monthYearStr }}:</span> {{
-                                    INRRuppe.format(item.totalAmount) }}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Expense Bar Chart(s) -->
         <div v-if="selectedCategory === ''" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
             <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">{{ `Expense by Category
@@ -152,6 +121,84 @@
             <div class="mb-2 text-lg font-medium text-blue-600 dark:text-white">{{ selectedCategory }} - Expense Over
                 Time</div>
             <BarChart :categories="barMonths" :series="barSeriesCategory" />
+        </div>
+
+        <!-- Table View of Aggregated Data -->
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mt-8 overflow-x-auto">
+            <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">Detailed Data Table</div>
+            <div class="max-h-[350px] overflow-y-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="sticky top-0 bg-white dark:bg-gray-800 z-10">
+                        <tr>
+                            <th
+                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Year</th>
+                            <th
+                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Month</th>
+                            <th
+                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Category</th>
+                            <th
+                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="row in filteredData" :key="`${row.year}-${row.month}-${row.category}`"
+                            class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.year }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ months[row.month - 1] ||
+                                row.month }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.category }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
+                                INRRuppe.format(row.totalAmount) }}</td>
+                        </tr>
+                        <tr v-if="filteredData.length === 0">
+                            <td colspan="4" class="px-4 py-2 text-center text-gray-400">No data available for the
+                                selected filters.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Excluded Categories Section (Income & Portfolio) -->
+        <div v-if="excludedCategorySummaries.length" class="mt-8">
+            <h2 class="text-2xl font-semibold text-blue-600 dark:text-white mb-4">&bull; Income & Portfolio Overview
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-for="cat in excludedCategorySummaries" :key="cat.category"
+                    class="bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-4 shadow-lg flex flex-col items-center border border-green-200 dark:border-green-700 hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span v-if="cat.category === 'Salary'"
+                            class="text-green-600 dark:text-green-400 text-2xl">💰</span>
+                        <span v-else-if="cat.category.toLowerCase().includes('mutual')"
+                            class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
+                        <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
+                        <span class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ cat.category }}</span>
+                    </div>
+                    <div class="text-xl md:text-3xl font-semibold mb-1"
+                        :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
+                        {{ INRRuppe.format(cat.total) }}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-300 mb-1">Total for selected period</div>
+                    <div class="flex flex-col items-center w-full">
+                        <div v-if="cat.timeline.length" class="text-xs text-gray-500 dark:text-gray-300">
+                            Last month:
+                            <span class="font-semibold text-gray-700 dark:text-gray-200">
+                                {{
+                                    (() => {
+                                        const last = cat.timeline[cat.timeline.length - 1];
+                                        return last ? INRRuppe.format(last.totalAmount) : '-';
+                                    })()
+                                }}
+                            </span>
+                        </div>
+                        <div v-else class="text-xs text-gray-400 dark:text-gray-500">No monthly data</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
