@@ -207,3 +207,18 @@ func GetSpendOnCategoriesMonthOnMonthHandler(w http.ResponseWriter, r *http.Requ
 	jsonResponse(http.StatusOK, w, out)
 
 }
+
+func GetSpendOnCategoriesByAllYearMonthAggregatedHandler(w http.ResponseWriter, r *http.Request) {
+	userID := 1
+
+	co := r.Context().Value("co").(*core.Core)
+	out, err := co.BQClient.GetSpendOnCategoriesByAllYearMonthAggregated(userID)
+	if err != nil {
+		co.Logger.Printf("Error fetching transactions: %v", err)
+		jsonResponse(http.StatusInternalServerError, w, ErrorResponse{Error: err.Error(), ErrorMessage: "unable to fetch transactions"})
+		return
+	}
+
+	co.Logger.Printf("Successfully fetched %d spend on categories by all year month aggregated for userID: %d", len(out), userID)
+	jsonResponse(http.StatusOK, w, out)
+}

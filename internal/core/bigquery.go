@@ -269,3 +269,44 @@ func (cbq *CustomBigQueryClient) GetSpendOnCategoriesMonthOnMonth(userId int, fr
 
 	return results, nil
 }
+
+type SpendOnCategoryByAllYearMonthAggregated struct {
+	Year         int    `json:"year"`
+	Month        int    `json:"month"`
+	MonthYearStr string `json:"monthYearStr"`
+	Category     string `json:"category"`
+	TotalAmount  int    `json:"totalAmount"`
+}
+
+// GetSpendOnCategoriesByAllYearMonthAggregated helps to get the spend on categories by all year month aggregated last 12 months.
+func (cbq *CustomBigQueryClient) GetSpendOnCategoriesByAllYearMonthAggregated(userId int) ([]SpendOnCategoryByAllYearMonthAggregated, error) {
+	query := cbq.Query(ANALYTICS_SPENDS_ON_CATEGORIES_BY_ALL_YEARMONTH_AGGREGATED)
+	query.Parameters = []bigquery.QueryParameter{
+		{
+			Name:  "UserID",
+			Value: userId,
+		},
+	}
+
+	it, err := query.Read(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var results []SpendOnCategoryByAllYearMonthAggregated
+
+	for {
+		var spend SpendOnCategoryByAllYearMonthAggregated
+		err := it.Next(&spend)
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, spend)
+	}
+
+	return results, nil
+}
