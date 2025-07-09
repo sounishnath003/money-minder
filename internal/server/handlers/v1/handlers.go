@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/sounishnath003/money-minder/internal/core"
 	"github.com/sounishnath003/money-minder/internal/models"
@@ -209,7 +210,18 @@ func GetSpendOnCategoriesMonthOnMonthHandler(w http.ResponseWriter, r *http.Requ
 }
 
 func GetSpendOnCategoriesByAllYearMonthAggregatedHandler(w http.ResponseWriter, r *http.Request) {
-	userID := 1
+	// get userID from query params
+	userIDStr := r.URL.Query().Get("userID")
+	if userIDStr == "" {
+		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: "userID is required", ErrorMessage: "userID is required"})
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: err.Error(), ErrorMessage: "invalid userID"})
+		return
+	}
 
 	co := r.Context().Value("co").(*core.Core)
 	out, err := co.BQClient.GetSpendOnCategoriesByAllYearMonthAggregated(userID)

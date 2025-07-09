@@ -1,8 +1,12 @@
 <template>
-    <div class="flex items-center justify-between w-full gap-5">
-        <RouterLink to="/" class="font-medium lg:text-2xl font-sans dark:text-white text-blue-600"> Money Minder
+    <div class="flex items-center justify-around w-full gap-5">
+        <RouterLink
+            to="/"
+            class="font-medium lg:text-2xl font-sans dark:text-white text-blue-600 hidden sm:inline"
+        >
+            Money Minder
         </RouterLink>
-        <div class="flex-1"></div>
+        <div class="flex-1 hidden sm:block"></div>
         <RouterLink v-for="route in routings" :to="route.path" :class="[
             $route.path === route.path
                 ? 'text-blue-600 dark:text-blue-400 font-medium'
@@ -22,6 +26,7 @@ const route = useRoute();
 const routings = [
     { name: 'Home', path: '/' },
     { name: 'Analytics', path: '/analytics' },
+    { name: 'Everything', path: '/everthing' },
     { name: 'Advisory', path: '/finance-advisory' },
 ]
 </script>

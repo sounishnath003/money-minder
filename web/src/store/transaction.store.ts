@@ -35,6 +35,7 @@ export const useTransactionStore = defineStore('transactionState', {
         paymentMethods: ref<string[]>([]),
         totalDailySpends: ref<{ unixMiliseconds: number, amount: number }[]>([]),
         spendOnCategoriesMonthOnMonth: ref<{ month: string, category: string, totalSpendAmount: number }[]>([]),
+        spendOnCategoriesByAllYearMonthAggregated: ref<{ year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[]>([]),
     }),
     actions: {
         async getAllCategories() {
@@ -162,6 +163,23 @@ export const useTransactionStore = defineStore('transactionState', {
             const data = await resp.json();
             this.spendOnCategoriesMonthOnMonth = data.data as { month: string, category: string, totalSpendAmount: number }[];
             return data.data as { month: string, category: string, totalSpendAmount: number }[];
+        },
+        async getSpendOnCategoriesByAllYearMonthAggregated(): Promise<{ year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[]> {
+            const url = new URL(`${API_BASE_URL}/api/v1/analytics/getSpendOnCategoriesByAggregatedByYearMonth?userID=1`);
+            const resp = await window.fetch(url.toString(), {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            this.spendOnCategoriesByAllYearMonthAggregated = data.data as { year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[];
+            return data.data as { year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[];
         },
         async createTransaction() {
             const newTransaction = {

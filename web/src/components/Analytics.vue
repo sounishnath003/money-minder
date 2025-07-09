@@ -1,4 +1,4 @@
-<template>
+<template class="w-full">
     <div class="text-2xl font-medium mb-3 lg:text-left text-center">
         <b class="text-blue-600">Money Minder Analytics: </b>Track & Optimize Your Finances
     </div>
