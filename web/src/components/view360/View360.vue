@@ -33,7 +33,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="text-lg md:text-2xl font-semibold text-gray-700 dark:text-gray-200">
+            <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
                 &bull; Yearly & Monthly Financial Summary
             </div>
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8 w-full">
@@ -59,7 +59,7 @@
                 </div>
             </div>
 
-            <div class="text-lg md:text-2xl font-semibold text-gray-700 dark:text-gray-200">
+            <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
                 &bull; Look at your expense summaries
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -74,7 +74,7 @@
                         topCategory.category || 'N/A' }}</div>
                     <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(topCategory.totalAmount ||
                         0)
-                        }}</div>
+                    }}</div>
                 </div>
                 <div
                     class="bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
@@ -118,11 +118,12 @@
                 </div>
             </div>
 
+            <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
+                &bull; {{ `Expense by Category
+                (${INCOME_CATEGORIES.join(', ')})` }}
+            </div>
             <!-- Expense Bar Chart(s) -->
             <div v-if="selectedCategory === ''" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
-                <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">{{ `Expense by Category
-                    (${INCOME_CATEGORIES.join(', ')})` }}
-                </div>
                 <BarChart :categories="barCategories" :series="barSeriesAll" />
             </div>
             <div v-else class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer">
@@ -132,8 +133,69 @@
                 <BarChart :categories="barMonths" :series="barSeriesCategory" />
             </div>
 
+            <!-- Comparison Section: Spend Growth/Decrease -->
+            <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
+                &bull; Compare your spend growth/decrease by category
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
+                <div class="flex flex-col md:flex-row gap-4 mb-4 items-center">
+                    <div>
+                        <label class="font-medium text-gray-700 dark:text-gray-300 mr-2">Older Month:</label>
+                        <select v-model="compareMonth1" :class="formInputCss">
+                            <option v-for="m in allMonthYearStrs" :key="m" :value="m">{{ m }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-medium text-gray-700 dark:text-gray-300 mr-2">Newer Month:</label>
+                        <select v-model="compareMonth2" :class="formInputCss">
+                            <option v-for="m in allMonthYearStrs" :key="m" :value="m">{{ m }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Category</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    {{ compareMonth1 }}</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    {{ compareMonth2 }}</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Growth/Decrease (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="row in comparisonTable" :key="row.category">
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-medium">{{
+                                    row.category }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
+                                    INRRuppe.format(row.month1) }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
+                                    INRRuppe.format(row.month2) }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-medium">
+                                    <span v-if="row.percent === null">-</span>
+                                    <span v-else
+                                        :class="row.percent > 0 ? 'text-green-600' : row.percent < 0 ? 'text-red-600' : ''">
+                                        {{ row.percent > 0 ? '+' : '' }}{{ row.percent.toFixed(2) }}%
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
+                &bull; All Transactions in the selected period ({{ filteredData.length }})
+            </div>
             <!-- Table View of Aggregated Data -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mt-8 overflow-x-auto">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow overflow-x-auto">
                 <div class="mb-2 text-lg font-semibold text-blue-600 dark:text-white">Detailed Data Table</div>
                 <div class="max-h-[350px] overflow-y-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -155,11 +217,10 @@
                         </thead>
                         <tbody>
                             <tr v-for="row in filteredData" :key="`${row.year}-${row.month}-${row.category}`"
-                                class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.year }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ months[row.month - 1]
-                                    ||
-                                    row.month }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.monthYearStr }}
+                                </td>
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.category }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
                                     INRRuppe.format(row.totalAmount) }}</td>
@@ -187,7 +248,7 @@
                                 class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
                             <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
                             <span class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ cat.category
-                                }}</span>
+                            }}</span>
                         </div>
                         <div class="text-xl md:text-3xl font-semibold mb-1"
                             :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
@@ -216,7 +277,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import BarChart from '../charts/BarChart.vue';
 import { useTransactionStore } from '../../store/transaction.store';
 
@@ -404,6 +465,47 @@ const barSeriesCategory = computed(() => {
             return found ? found.totalAmount : 0;
         })
     }];
+});
+
+// --- Comparison Section ---
+const allMonthYearStrs = computed(() => {
+    // All unique monthYearStrs in filteredData
+    return Array.from(new Set(filteredData.value.map(d => d.monthYearStr))).sort();
+});
+const compareMonth1 = ref('');
+const compareMonth2 = ref('');
+
+// Set defaults after data loads
+watch(
+    () => allMonthYearStrs.value,
+    (months) => {
+        if (months.length && (!compareMonth1.value || !compareMonth2.value)) {
+            compareMonth1.value = months[0];
+            compareMonth2.value = months[months.length - 1];
+        }
+    },
+    { immediate: true }
+);
+
+const comparisonTable = computed(() => {
+    // For each unique category, get spend in both months and compute % change
+    const categories = Array.from(new Set(filteredData.value.map(d => d.category)));
+    return categories.map(cat => {
+        const m1 = filteredData.value.find(d => d.category === cat && d.monthYearStr === compareMonth1.value);
+        const m2 = filteredData.value.find(d => d.category === cat && d.monthYearStr === compareMonth2.value);
+        const val1 = m1 ? m1.totalAmount : 0;
+        const val2 = m2 ? m2.totalAmount : 0;
+        let percent = null;
+        if (val1 === 0 && val2 === 0) percent = null;
+        else if (val1 === 0) percent = 100;
+        else percent = ((val2 - val1) / Math.abs(val1)) * 100;
+        return {
+            category: cat,
+            month1: val1,
+            month2: val2,
+            percent
+        };
+    });
 });
 
 // New computed property for excluded category summaries
