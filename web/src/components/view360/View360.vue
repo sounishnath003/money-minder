@@ -79,7 +79,7 @@
                         topCategory.category || 'N/A' }}</div>
                     <div class="text-sm text-gray-600 dark:text-gray-300">{{ INRRuppe.format(topCategory.totalAmount ||
                         0)
-                        }}</div>
+                    }}</div>
                 </div>
                 <div
                     class="bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl p-3 shadow-lg flex flex-col items-center border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
@@ -268,7 +268,7 @@
                                 class="text-purple-600 dark:text-purple-400 text-2xl">📈</span>
                             <span v-else class="text-blue-600 dark:text-blue-400 text-2xl">📊</span>
                             <span class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ cat.category
-                                }}</span>
+                            }}</span>
                         </div>
                         <div class="text-xl md:text-3xl font-semibold mb-1"
                             :class="cat.category === 'Salary' ? 'text-green-700 dark:text-green-400' : 'text-purple-700 dark:text-purple-400'">
@@ -561,11 +561,12 @@ const comparisonTable = computed(() => {
 });
 
 function getMonthName(monthYearStr) {
-    // monthYearStr is like '2024-01', '2024-02', etc.
+    // monthYearStr is like 'May-2025', 'Jun-2025', etc.
+    if (!monthYearStr) return monthYearStr;
     const parts = monthYearStr.split('-');
     if (parts.length !== 2) return monthYearStr;
-    const monthIdx = Number(parts[1]) - 1;
-    return months[monthIdx] || monthYearStr;
+    // The month is the first part, e.g., 'May' in 'May-2025'
+    return parts[0];
 }
 
 // New computed property for excluded category summaries
