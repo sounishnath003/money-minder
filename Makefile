@@ -47,4 +47,4 @@ deploy-all: build-all
 	--service-account=797087556919-compute@developer.gserviceaccount.com \
 	--max-instances=5 \
 	--region=asia-south1 \
-	--set-env-vars=JWT_SECRET=$$JWT_SECRET,SITE_SECRET_PUBLIC_KEY=$$SITE_SECRET_PUBLIC_KEY,SITE_SECRET_PRIVATE_KEY=$$SITE_SECRET_PRIVATE_KEY
+	--set-env-vars=JWT_SECRET=$$(JWT_SECRET),SITE_SECRET_PUBLIC_KEY=$$(SITE_SECRET_PUBLIC_KEY),SITE_SECRET_PRIVATE_KEY=$$(SITE_SECRET_PRIVATE_KEY)
