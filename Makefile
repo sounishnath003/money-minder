@@ -15,6 +15,8 @@ build-backend:
 
 .PHONY: run-backend
 run-backend: build-backend
+	export SITE_SECRET_PUBLIC_KEY=$(SITE_SECRET_PUBLIC_KEY)
+	export SITE_SECRET_PRIVATE_KEY=$(SITE_SECRET_PRIVATE_KEY)
 	./tmp/moneyminder
 
 .PHONY: frontend-run-dev
@@ -44,4 +46,5 @@ deploy-all: build-all
 	--port=3000 \
 	--service-account=797087556919-compute@developer.gserviceaccount.com \
 	--max-instances=5 \
-	--region=asia-south1
+	--region=asia-south1 \
+	--set-env=JWT_SECRET=$(JWT_SECRET),SITE_SECRET_PUBLIC_KEY=$(SITE_SECRET_PUBLIC_KEY),SITE_SECRET_PRIVATE_KEY=$(SITE_SECRET_PRIVATE_KEY)

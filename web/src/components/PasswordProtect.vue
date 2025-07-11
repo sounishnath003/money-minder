@@ -25,14 +25,14 @@
                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                                placeholder-gray-400 dark:placeholder-gray-500" />
                 </div>
-                <button type="submit" :disabled="auth.loading"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded">
+                <button type="submit" :disabled="auth.loading" class="w-full text-white font-semibold py-2 rounded"
+                    :class="auth.error ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'">
                     <span v-if="auth.loading">Logging in...</span>
-                    <span v-else>Login</span>
+                    <span v-else-if="auth.error"> {{ auth.error }}</span>
+                    <span v-else>Let's access &rarr;</span>
                 </button>
-                <div v-if="auth.error" class="text-red-500 text-center text-sm">{{ auth.error }}</div>
                 <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
-                    Your data is protected with end-to-end encryption
+                    🔒 Your data is protected with end-to-end encryption
                 </p>
             </form>
         </div>

@@ -12,7 +12,8 @@
             {{ route.name }}
         </RouterLink>
 
-        <button @click="auth.logout" class="bg-red-600 px-4 cursor-pointer py-1 rounded text-white font-medium">
+        <button @click="auth.logout"
+            class="bg-red-600 hover:bg-red-700 px-2 cursor-pointer py-1 rounded text-white font-medium">
             Logout
         </button>
     </div>

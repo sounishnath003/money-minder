@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/bigquery"
+	"github.com/sounishnath003/money-minder/internal/models"
 	"github.com/sounishnath003/money-minder/internal/utility"
 )
 
@@ -13,6 +14,8 @@ type Core struct {
 	Hostname        string
 	Logger          *log.Logger
 	GoogleProjectId string
+	ServerJwtSecret string
+	UserStore       map[string]models.User // key: site-public-key
 
 	BQClient *CustomBigQueryClient
 }
@@ -24,6 +27,23 @@ func InitCore() *Core {
 		Hostname:        utility.GetStringValueFromEnv("HOSTNAME", "0.0.0.0"),
 		GoogleProjectId: utility.GetStringValueFromEnv("GOOGLE_PROJECT_ID", "sounish-cloud-workstation"),
 		Logger:          log.Default(),
+
+		// JWT Server side site secret key
+		ServerJwtSecret: utility.GetJWTSecret(),
+	}
+
+	// Initialize the user store context from the Site private secret key
+	// Get the site public and private key
+	sitePublicKey := utility.GetStringValueFromEnv("SITE_SECRET_PUBLIC_KEY", "default_site_public_secret")
+	sitePrivateKey := utility.GetStringValueFromEnv("SITE_SECRET_PRIVATE_KEY", "default_site_private_secret")
+
+	// Update the store context information
+	co.UserStore = map[string]models.User{
+		sitePublicKey: {
+			ID:       1, // 0 is not allowed. 1 is the seed value, do not change
+			Name:     "Sounish Nath",
+			Password: sitePrivateKey,
+		},
 	}
 
 	// Initiatize the google bigquery client

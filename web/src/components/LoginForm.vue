@@ -23,7 +23,7 @@ const email = ref('');
 const password = ref('');
 
 async function onLogin() {
-  const ok = await auth.login(email.value, password.value);
+  const ok = await auth.login(password.value);
   if (ok) emit('loginSuccess');
 }
 
