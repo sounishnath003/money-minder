@@ -15,6 +15,7 @@ build-backend:
 
 .PHONY: run-backend
 run-backend: build-backend
+	export JWT_SECRET=$(JWT_SECRET)
 	export SITE_SECRET_PUBLIC_KEY=$(SITE_SECRET_PUBLIC_KEY)
 	export SITE_SECRET_PRIVATE_KEY=$(SITE_SECRET_PRIVATE_KEY)
 	./tmp/moneyminder
@@ -40,6 +41,10 @@ build-all: build-backend build-frontend
 
 .PHONY: deploy-all
 deploy-all: build-all
+	export JWT_SECRET=$(JWT_SECRET)
+	export SITE_SECRET_PUBLIC_KEY=$(SITE_SECRET_PUBLIC_KEY)
+	export SITE_SECRET_PRIVATE_KEY=$(SITE_SECRET_PRIVATE_KEY)
+
 	gcloud run deploy moneyminder \
 	--image=$(DockerImageName):$$(git rev-parse --short HEAD) \
 	--allow-unauthenticated \
@@ -47,4 +52,4 @@ deploy-all: build-all
 	--service-account=797087556919-compute@developer.gserviceaccount.com \
 	--max-instances=5 \
 	--region=asia-south1 \
-	--set-env-vars=JWT_SECRET=$$(JWT_SECRET),SITE_SECRET_PUBLIC_KEY=$$(SITE_SECRET_PUBLIC_KEY),SITE_SECRET_PRIVATE_KEY=$$(SITE_SECRET_PRIVATE_KEY)
+	--set-env-vars=JWT_SECRET=$(JWT_SECRET),SITE_SECRET_PUBLIC_KEY=$(SITE_SECRET_PUBLIC_KEY),SITE_SECRET_PRIVATE_KEY=$(SITE_SECRET_PRIVATE_KEY)
