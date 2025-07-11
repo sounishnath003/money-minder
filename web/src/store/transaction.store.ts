@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useAuthStore } from './auth.store';
 
 const COMMIT_HASH = import.meta.env.VITE_COMMIT_HASH || 'default-commit-hash-1.0.0';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `http://localhost:3000`;
@@ -15,6 +16,14 @@ export interface Transaction {
     createdAt: Date;
 }
 
+function getAuthHeaders() {
+    const authStore = useAuthStore();
+    if (!authStore.token) throw new Error('Not authenticated');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authStore.token}`
+    };
+}
 
 export const useTransactionStore = defineStore('transactionState', {
     state: () => ({
@@ -44,9 +53,8 @@ export const useTransactionStore = defineStore('transactionState', {
         async getAllCategories() {
             const resp = await window.fetch(`${API_BASE_URL}/api/v1/categories`, {
                 method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
             });
             const data = await resp.json();
             this.allCategories = data.data as { id: number; category: string; }[];
@@ -55,9 +63,8 @@ export const useTransactionStore = defineStore('transactionState', {
         async getPaymentMethods() {
             const resp = await window.fetch(`${API_BASE_URL}/api/v1/paymentMethods`, {
                 method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
             });
             const data = await resp.json();
             this.paymentMethods = data.data as string[];
@@ -74,9 +81,8 @@ export const useTransactionStore = defineStore('transactionState', {
 
                 const resp = await window.fetch(url.toString(), {
                     method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    credentials: 'same-origin',
+                    headers: getAuthHeaders(),
                 });
 
                 if (!resp.ok) {
@@ -108,9 +114,8 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const resp = await window.fetch(url.toString(), {
                 method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
             });
 
             if (!resp.ok) {
@@ -131,9 +136,8 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const resp = await window.fetch(url.toString(), {
                 method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
             });
 
             if (!resp.ok) {
@@ -154,9 +158,8 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const resp = await window.fetch(url.toString(), {
                 method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
             });
 
             if (!resp.ok) {
@@ -168,12 +171,11 @@ export const useTransactionStore = defineStore('transactionState', {
             return data.data as { month: string, category: string, totalSpendAmount: number }[];
         },
         async getSpendOnCategoriesByAllYearMonthAggregated(): Promise<{ year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[]> {
-            const url = new URL(`${API_BASE_URL}/api/v1/analytics/getSpendOnCategoriesByAggregatedByYearMonth?userID=1`);
+            const url = new URL(`${API_BASE_URL}/api/v1/analytics/getSpendOnCategoriesByAggregatedByYearMonth`);
             const resp = await window.fetch(url.toString(), {
                 method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
             });
 
             if (!resp.ok) {
@@ -187,7 +189,7 @@ export const useTransactionStore = defineStore('transactionState', {
         async createTransaction() {
             const newTransaction = {
                 id: Date.now(),
-                userID: 1,
+                userID: 1, // will be set by backend
                 name: this.addTransactionForm.name,
                 transactionType: this.addTransactionForm.transactionType,
                 categoryID: +this.addTransactionForm.categoryID,
@@ -215,9 +217,8 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const resp = await window.fetch(`${API_BASE_URL}/api/v1/transactions`, {
                 method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
                 body: JSON.stringify(newTransaction)
             });
             if (resp.status !== 200) throw new Error(JSON.stringify(await resp.json()))

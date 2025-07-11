@@ -3,9 +3,11 @@ package server
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/sounishnath003/money-minder/internal/core"
+	"github.com/sounishnath003/money-minder/internal/utility"
 )
 
 type Middleware func(http.Handler) http.Handler
@@ -88,6 +90,29 @@ func TimeoutMiddleware(co *core.Core) Middleware {
 				http.Error(w, "Request timeout", http.StatusGatewayTimeout)
 				return
 			}
+		})
+	}
+}
+
+// AuthJWTMiddleware checks for a valid JWT in the Authorization header and adds user info to context
+func AuthJWTMiddleware() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			header := r.Header.Get("Authorization")
+			if header == "" || !strings.HasPrefix(header, "Bearer ") {
+				http.Error(w, "Missing or invalid Authorization header", http.StatusUnauthorized)
+				return
+			}
+			tokenString := strings.TrimPrefix(header, "Bearer ")
+			claims, err := utility.ValidateJWT(tokenString)
+			if err != nil {
+				http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
+				return
+			}
+			// Add claims to context
+			ctx := context.WithValue(r.Context(), "jwtClaims", claims)
+			r = r.WithContext(ctx)
+			next.ServeHTTP(w, r)
 		})
 	}
 }

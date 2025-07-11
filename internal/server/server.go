@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/rs/cors"
 
@@ -12,6 +14,16 @@ import (
 
 type Server struct {
 	Co *core.Core
+}
+
+// getAllowedOrigins returns a list of allowed origins for CORS.
+// In production, you should replace this with a config/env variable or a more secure mechanism.
+func getAllowedOrigins() []string {
+	// Example: allow localhost and your production domain
+	return []string{
+		"http://localhost:5173",
+		"http://localhost:3000",
+	}
 }
 
 func NewServer(co *core.Core) *Server {
@@ -38,35 +50,73 @@ func (s *Server) Start() {
 	// Handle all routes by serving index.html for client-side routing
 	mux.Handle("/", fs)
 
-	// Enforce middleware chains on the mux with CORS middleware
-	http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port),
-		MiddlewareChain(
-			cors.New(cors.Options{
-				AllowedOrigins: []string{"*"},
-				AllowedMethods: []string{"GET", "POST", "HEAD"},
-				ExposedHeaders: []string{"X-Request-ID", "Authorization", "Content-Type", "Content-Length"},
-				MaxAge:         3600,
-			}).Handler(mux),
-			LoggerMiddleware(s.Co),
-			TimeoutMiddleware(s.Co),
-			AddContextMiddleware("co", s.Co)))
+	// --- CORS FIX START ---
+	// Use github.com/rs/cors as a top-level handler, not inside MiddlewareChain.
+	// This ensures CORS headers are set for all requests, including OPTIONS preflight.
+	// AllowCredentials cannot be used with AllowedOrigins: ["*"], so we must specify explicit origins.
+	allowedOrigins := getAllowedOrigins()
+	c := cors.New(cors.Options{
+		AllowedOrigins:     allowedOrigins,
+		AllowedMethods:     []string{"GET", "POST", "HEAD", "OPTIONS"},
+		AllowedHeaders:     []string{"*"},
+		ExposedHeaders:     []string{"X-Request-ID", "Authorization", "Content-Type", "Content-Length", "Access-Control-Allow-Origin"},
+		AllowCredentials:   true,
+		MaxAge:             3600,
+		OptionsPassthrough: false,
+		// Enable origin function for more dynamic control if needed
+		AllowOriginFunc: func(origin string) bool {
+			for _, o := range allowedOrigins {
+				if o == origin {
+					return true
+				}
+				// Optionally allow subdomains
+				if strings.HasPrefix(o, "https://") && strings.HasPrefix(origin, "https://") {
+					if strings.HasSuffix(origin, strings.TrimPrefix(o, "https://")) {
+						return true
+					}
+				}
+			}
+			return false
+		},
+	})
+	handlerWithMiddleware := MiddlewareChain(
+		mux,
+		LoggerMiddleware(s.Co),
+		TimeoutMiddleware(s.Co),
+		AddContextMiddleware("co", s.Co),
+	)
+	finalHandler := c.Handler(handlerWithMiddleware)
+
+	// Listen and serve with the CORS-wrapped handler
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", s.Co.Port), finalHandler); err != nil {
+		fmt.Fprintf(os.Stderr, "server failed: %v\n", err)
+	}
 }
 
 // defineApiRouterV1Endpoints - define a subrouter for the api groupping.
 // Group of /api/v1 routes
 func defineApiRouterV1Endpoints() http.Handler {
 	router := http.NewServeMux()
-	// API /api/v1 route endpoints
+	// Auth endpoints (public)
+	router.HandleFunc("POST /auth/register", v1.RegisterHandler)
+	router.HandleFunc("POST /auth/login", v1.LoginHandler)
+	// Public endpoints
 	router.HandleFunc("GET /healthz", v1.HealthHandler)
 	router.HandleFunc("GET /categories", v1.GetAllCategoriesHandler)
 	router.HandleFunc("GET /paymentMethods", v1.GetAllPaymentMethodOptionsHandler)
-	router.HandleFunc("GET /transactions", v1.GetTransactionsHandler)
-	router.HandleFunc("POST /transactions", v1.AddTransactionHandler)
-	router.HandleFunc("GET /transactions/spendByCategory", v1.GetTotalSpendByCategoryHandler)
-	// Analytics endpoints
-	router.HandleFunc("GET /analytics/getDailySpendByTimeframe", v1.GetDailyTotalSpendByTimeframeHandler)
-	router.HandleFunc("GET /analytics/getSpendOnCategoriesMonthOnMonth", v1.GetSpendOnCategoriesMonthOnMonthHandler)
-	router.HandleFunc("GET /analytics/getSpendOnCategoriesByAggregatedByYearMonth", v1.GetSpendOnCategoriesByAllYearMonthAggregatedHandler)
+
+	// Protected endpoints (require JWT)
+	protectedMux := http.NewServeMux()
+	protectedMux.HandleFunc("GET /transactions", v1.GetTransactionsHandler)
+	protectedMux.HandleFunc("POST /transactions", v1.AddTransactionHandler)
+	protectedMux.HandleFunc("GET /transactions/spendByCategory", v1.GetTotalSpendByCategoryHandler)
+	protectedMux.HandleFunc("GET /analytics/getDailySpendByTimeframe", v1.GetDailyTotalSpendByTimeframeHandler)
+	protectedMux.HandleFunc("GET /analytics/getSpendOnCategoriesMonthOnMonth", v1.GetSpendOnCategoriesMonthOnMonthHandler)
+	protectedMux.HandleFunc("GET /analytics/getSpendOnCategoriesByAggregatedByYearMonth", v1.GetSpendOnCategoriesByAllYearMonthAggregatedHandler)
+
+	router.Handle("/transactions", MiddlewareChain(protectedMux, AuthJWTMiddleware()))
+	router.Handle("/transactions/", MiddlewareChain(protectedMux, AuthJWTMiddleware()))
+	router.Handle("/analytics/", MiddlewareChain(protectedMux, AuthJWTMiddleware()))
 
 	return router
 }

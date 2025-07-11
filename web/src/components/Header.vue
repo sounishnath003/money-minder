@@ -1,9 +1,6 @@
 <template>
     <div class="flex items-center justify-around w-full gap-5">
-        <RouterLink
-            to="/"
-            class="font-medium lg:text-2xl font-sans dark:text-white text-blue-600 hidden sm:inline"
-        >
+        <RouterLink to="/" class="font-medium lg:text-2xl font-sans dark:text-white text-blue-600 hidden sm:inline">
             Money Minder
         </RouterLink>
         <div class="flex-1 hidden sm:block"></div>
@@ -14,14 +11,21 @@
         ]">
             {{ route.name }}
         </RouterLink>
+
+        <button @click="auth.logout" class="bg-red-600 px-4 cursor-pointer py-1 rounded text-white font-medium">
+            Logout
+        </button>
     </div>
 </template>
 
 <script setup>
 import { RouterLink } from 'vue-router';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '../store/auth.store';
 
 const route = useRoute();
+
+const auth = useAuthStore();
 
 const routings = [
     { name: 'Home', path: '/' },

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"strconv"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/sounishnath003/money-minder/internal/core"
 	"github.com/sounishnath003/money-minder/internal/models"
 )
@@ -69,11 +69,28 @@ func GetAllPaymentMethodOptionsHandler(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(http.StatusOK, w, paymentMethods)
 }
 
+// Helper to extract userID from JWT claims in context
+func getUserIDFromContext(r *http.Request) (int, error) {
+	claims, ok := r.Context().Value("jwtClaims").(jwt.MapClaims)
+	if !ok {
+		return 0, http.ErrNoCookie
+	}
+	userIDFloat, ok := claims["userId"].(float64)
+	if !ok {
+		return 0, http.ErrNoCookie
+	}
+	return int(userIDFloat), nil
+}
+
 // GetTransactionsHandler handler helps to get the total balance available for this month
 func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 	fromDate := r.URL.Query().Get("from")
 	toDate := r.URL.Query().Get("to")
-	userID := 1
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
+		return
+	}
 
 	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
 	if err != nil {
@@ -109,6 +126,13 @@ func AddTransactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
+		return
+	}
+	transaction.UserID = userID
+
 	co := r.Context().Value("co").(*core.Core)
 	co.Logger.Printf("Adding new transaction: %+v", transaction)
 
@@ -128,7 +152,11 @@ func AddTransactionHandler(w http.ResponseWriter, r *http.Request) {
 func GetTotalSpendByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	fromDate := r.URL.Query().Get("from")
 	toDate := r.URL.Query().Get("to")
-	userID := 1
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
+		return
+	}
 
 	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
 	if err != nil {
@@ -157,7 +185,11 @@ func GetTotalSpendByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 func GetDailyTotalSpendByTimeframeHandler(w http.ResponseWriter, r *http.Request) {
 	fromDate := r.URL.Query().Get("from")
 	toDate := r.URL.Query().Get("to")
-	userID := 1
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
+		return
+	}
 
 	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
 	if err != nil {
@@ -184,7 +216,11 @@ func GetDailyTotalSpendByTimeframeHandler(w http.ResponseWriter, r *http.Request
 func GetSpendOnCategoriesMonthOnMonthHandler(w http.ResponseWriter, r *http.Request) {
 	fromDate := r.URL.Query().Get("from")
 	toDate := r.URL.Query().Get("to")
-	userID := 1
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
+		return
+	}
 
 	fromDateParsed, toDateParsed, err := CheckDateRange(fromDate, toDate)
 	if err != nil {
@@ -210,16 +246,9 @@ func GetSpendOnCategoriesMonthOnMonthHandler(w http.ResponseWriter, r *http.Requ
 }
 
 func GetSpendOnCategoriesByAllYearMonthAggregatedHandler(w http.ResponseWriter, r *http.Request) {
-	// get userID from query params
-	userIDStr := r.URL.Query().Get("userID")
-	if userIDStr == "" {
-		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: "userID is required", ErrorMessage: "userID is required"})
-		return
-	}
-
-	userID, err := strconv.Atoi(userIDStr)
+	userID, err := getUserIDFromContext(r)
 	if err != nil {
-		jsonResponse(http.StatusBadRequest, w, ErrorResponse{Error: err.Error(), ErrorMessage: "invalid userID"})
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
 		return
 	}
 
