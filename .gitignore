@@ -11,3 +11,4 @@ tmp
 .env
 .env.dev
 .env.prod
+./assets

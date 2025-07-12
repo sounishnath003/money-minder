@@ -1,8 +1,6 @@
 
 # Money Minder
 
-> Work is in progress
-
 Money Minder is a personal finance management application that helps users track their expenses and income. Built with Vue.js, it features a password-protected interface, transaction management, and balance tracking. The application allows users to categorize transactions, view detailed transaction history, and monitor their financial status through an intuitive dashboard. It's designed to be self-hosted, giving users complete control over their financial data.
 
 ## Techstack:
@@ -12,7 +10,6 @@ Money Minder is a personal finance management application that helps users track
 - Tailwind CSS for styling
 - Pinia for state management
 - Vue Router for navigation
-- Chart.js or D3.js for Charts (TODO)
 
 ## Frontend (Vue) -
 
@@ -70,7 +67,50 @@ Look back your expenses Year by year and MoM drill down.
 ![e1](assets/everything-2.png)
 
 
-### Author Information
+## Local setup for Backend server:
+
+Check the `.env.sample` file mentioned os environment variables.
+
+```bash
+export JWT_SECRET=$(LC_ALL=C tr -dc 'A-Za-z0-9!.*@#' </dev/urandom | head -c 48)
+export SITE_SECRET_PUBLIC_KEY=
+export SITE_SECRET_PRIVATE_KEY=
+
+make run-backend 
+```
+
+## Local setup for Frontend app:
+
+Check the `web/.env.sample` file mentioned os environment variables.
+Actually you would need 3 different environment `.env` files
+- .env.sample
+- .env.dev
+- .env.prod
+
+```bash
+make frontend-run-dev
+```
+
+## For Production Deployments:
+
+I am using `Google Cloud Platform` to self host my service. What i do generally.
+
+```bash
+export JWT_SECRET=$(LC_ALL=C tr -dc 'A-Za-z0-9!.*@#' </dev/urandom | head -c 48)
+export SITE_SECRET_PUBLIC_KEY=
+export SITE_SECRET_PRIVATE_KEY=
+
+make deploy-all
+```
+
+Note: In future, I might introduce the .`@cloud/build` to automated. But I do not require it currently. The cloud build service is the platform services for developer tools in GCP.
+
+## TODO:
+- Create the migration script for the BigQuery.
+- Configuration as Code using Go.
+- Easily clone and setup your personal service.
+
+## Author Information
 - **Name:** Sounish Nath
 - **GitHub:** [github.com/sounishnath003](https://github.com/sounishnath003)
 - **LinkedIn:** [linkedin.com/in/sounishnath](https://linkedin.com/in/sounishnath)

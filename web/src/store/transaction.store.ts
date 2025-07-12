@@ -18,7 +18,10 @@ export interface Transaction {
 
 function getAuthHeaders() {
     const authStore = useAuthStore();
-    if (!authStore.token) throw new Error('Not authenticated');
+    if (!authStore.token) {
+        authStore.logout();
+        throw new Error('Not authenticated');
+    }
     return {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authStore.token}`
@@ -51,14 +54,20 @@ export const useTransactionStore = defineStore('transactionState', {
     }),
     actions: {
         async getAllCategories() {
-            const resp = await window.fetch(`${API_BASE_URL}/api/v1/categories`, {
-                method: "GET",
-                credentials: 'same-origin',
-                headers: getAuthHeaders(),
-            });
-            const data = await resp.json();
-            this.allCategories = data.data as { id: number; category: string; }[];
-            return this.allCategories;
+            try {
+                const resp = await window.fetch(`${API_BASE_URL}/api/v1/categories`, {
+                    method: "GET",
+                    credentials: 'same-origin',
+                    headers: getAuthHeaders(),
+                });
+                const data = await resp.json();
+                this.allCategories = data.data as { id: number; category: string; }[];
+                return this.allCategories;
+            } catch (error) {
+                // Reload back to login page.
+                window.location.replace('/');
+                return;
+            }
         },
         async getPaymentMethods() {
             const resp = await window.fetch(`${API_BASE_URL}/api/v1/paymentMethods`, {
