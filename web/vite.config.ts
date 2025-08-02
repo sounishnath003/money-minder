@@ -18,6 +18,7 @@ export default defineConfig({
           // Vendor chunks
           'vue-vendor': ['vue', 'vue-router', 'pinia'],
           'charts-vendor': ['vue3-apexcharts', 'apexcharts'],
+          'ui-vendor': ['@headlessui/vue', '@heroicons/vue'],
           // Separate analytics components
           'analytics': [
             './src/components/Analytics.vue',
