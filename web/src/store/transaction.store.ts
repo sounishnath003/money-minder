@@ -53,19 +53,6 @@ export const useTransactionStore = defineStore('transactionState', {
         spendOnCategoriesByAllYearMonthAggregated: ref<{ year: number, month: number, monthYearStr: string, category: string, paymentMethod: string, totalAmount: number }[]>([]),
     }),
     actions: {
-        // Fetch all initial data concurrently
-        async loadAllDataConcurrently() {
-            await Promise.all([
-                this.getAllCategories(),
-                this.getPaymentMethods(),
-                this.getTransactions(),
-                this.getAllSpendsByCategories(),
-                this.getDailyTotalSpendByTimeframe(),
-                this.getSpendOnCategoriesMonthOnMonth(),
-                this.getSpendOnCategoriesByAllYearMonthAggregated(),
-            ]);
-        },
-
         async getAllCategories() {
             try {
                 const resp = await window.fetch(`${API_BASE_URL}/api/v1/categories`, {
@@ -77,6 +64,7 @@ export const useTransactionStore = defineStore('transactionState', {
                 this.allCategories = data.data as { id: number; category: string; }[];
                 return this.allCategories;
             } catch (error) {
+                // Reload back to login page.
                 window.location.replace('/');
                 return;
             }
@@ -111,12 +99,15 @@ export const useTransactionStore = defineStore('transactionState', {
                 }
 
                 const data = await resp.json() as { data: Transaction[] };
+                // Convert string dates to Date objects for proper date handling in the UI
+                // This ensures consistent date formatting and enables date operations
                 this.allTransactions = data.data.map(tx => ({
                     ...tx,
                     createdAt: new Date(tx.createdAt)
                 }));
-                // No need to await analytics here; let the caller decide if needed
-                return this.allTransactions;
+                // Update spend by categories
+                Promise.all([this.getAllSpendsByCategories(), this.getSpendOnCategoriesByAllYearMonthAggregated()])
+                return data.data as Transaction[];
             } catch (error) {
                 console.error('Failed to fetch transactions:', error);
                 throw error;
@@ -142,7 +133,7 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const data = await resp.json();
             this.allSpendsByCategories = data.data as { category: string, totalAmount: number }[];
-            return this.allSpendsByCategories;
+            return data.data as { category: string, totalAmount: number }[];
         },
         async getDailyTotalSpendByTimeframe(): Promise<{ unixMiliseconds: number, amount: number }[]> {
             const fromDateStr = this.startDate.toISOString();
@@ -164,7 +155,7 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const data = await resp.json();
             this.totalDailySpends = data.data as { unixMiliseconds: number, amount: number }[];
-            return this.totalDailySpends;
+            return data.data as { unixMiliseconds: number, amount: number }[];
         },
         async getSpendOnCategoriesMonthOnMonth(): Promise<{ month: string, category: string, totalSpendAmount: number }[]> {
             const fromDateStr = this.startDate.toISOString();
@@ -186,7 +177,7 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const data = await resp.json();
             this.spendOnCategoriesMonthOnMonth = data.data as { month: string, category: string, totalSpendAmount: number }[];
-            return this.spendOnCategoriesMonthOnMonth;
+            return data.data as { month: string, category: string, totalSpendAmount: number }[];
         },
         async getSpendOnCategoriesByAllYearMonthAggregated(): Promise<{ year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[]> {
             const url = new URL(`${API_BASE_URL}/api/v1/analytics/getSpendOnCategoriesByAggregatedByYearMonth`);
@@ -202,7 +193,7 @@ export const useTransactionStore = defineStore('transactionState', {
 
             const data = await resp.json();
             this.spendOnCategoriesByAllYearMonthAggregated = data.data as { year: number, month: number, monthYearStr: string, category: string, paymentMethod: string, totalAmount: number }[];
-            return this.spendOnCategoriesByAllYearMonthAggregated;
+            return data.data as { year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[];
         },
         async createTransaction() {
             const newTransaction = {
@@ -243,7 +234,7 @@ export const useTransactionStore = defineStore('transactionState', {
             console.log('transaction saved.');
             this.resetTransactionForm();
 
-            // Run all updates concurrently
+            // Update the transactions and spends by categories
             Promise.all([
                 this.getTransactions(),
                 this.getAllSpendsByCategories(),
@@ -260,4 +251,4 @@ export const useTransactionStore = defineStore('transactionState', {
             this.addTransactionForm.amount = 0;
         }
     },
-});
+})
