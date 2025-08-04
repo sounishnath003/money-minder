@@ -5,7 +5,7 @@
       <!-- header -->
       <Header />
       <!-- body -->
-      <main class="container w-full">
+      <main class="container w-full mx-auto">
         <RouterView />
       </main>
       <!-- footer -->
