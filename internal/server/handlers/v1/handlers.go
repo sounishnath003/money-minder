@@ -263,3 +263,22 @@ func GetSpendOnCategoriesByAllYearMonthAggregatedHandler(w http.ResponseWriter, 
 	co.Logger.Printf("Successfully fetched %d spend on categories by all year month aggregated for userID: %d", len(out), userID)
 	jsonResponse(http.StatusOK, w, out)
 }
+
+func GetMonthlySavingsBreakdownHandler(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		jsonResponse(http.StatusUnauthorized, w, ErrorResponse{Error: "unauthorized", ErrorMessage: "invalid or missing token"})
+		return
+	}
+
+	co := r.Context().Value("co").(*core.Core)
+	out, err := co.BQClient.GetMonthlySavingsBreakdown(userID)
+	if err != nil {
+		co.Logger.Printf("Error fetching monthly savings breakdown: %v", err)
+		jsonResponse(http.StatusInternalServerError, w, ErrorResponse{Error: err.Error(), ErrorMessage: "unable to fetch monthly savings breakdown"})
+		return
+	}
+
+	co.Logger.Printf("Successfully fetched %d monthly savings breakdown records for userID: %d", len(out), userID)
+	jsonResponse(http.StatusOK, w, out)
+}

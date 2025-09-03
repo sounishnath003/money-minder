@@ -28,6 +28,7 @@ function getAuthHeaders() {
     };
 }
 
+
 export const useTransactionStore = defineStore('transactionState', {
     state: () => ({
         commitHash: ref(COMMIT_HASH),
@@ -51,6 +52,7 @@ export const useTransactionStore = defineStore('transactionState', {
         totalDailySpends: ref<{ unixMiliseconds: number, amount: number }[]>([]),
         spendOnCategoriesMonthOnMonth: ref<{ month: string, category: string, totalSpendAmount: number }[]>([]),
         spendOnCategoriesByAllYearMonthAggregated: ref<{ year: number, month: number, monthYearStr: string, category: string, paymentMethod: string, totalAmount: number }[]>([]),
+        monthlySavingsBreakdown: ref<{ year: number, month: number, monthYearStr: string, totalIncome: number, totalExpense: number, rawExpense: number, investments: number, netSavings: number, savingsChange: number, savingsChangePercent: number }[]>([]),
     }),
     actions: {
         async getAllCategories() {
@@ -110,6 +112,9 @@ export const useTransactionStore = defineStore('transactionState', {
                 return data.data as Transaction[];
             } catch (error) {
                 console.error('Failed to fetch transactions:', error);
+                // Forcefully clear all the variables on failure of fetching transaction details.
+                // Helps to manage the auth store logout();
+                window.localStorage.clear();
                 throw error;
             }
         },
@@ -195,6 +200,22 @@ export const useTransactionStore = defineStore('transactionState', {
             this.spendOnCategoriesByAllYearMonthAggregated = data.data as { year: number, month: number, monthYearStr: string, category: string, paymentMethod: string, totalAmount: number }[];
             return data.data as { year: number, month: number, monthYearStr: string, category: string, totalAmount: number }[];
         },
+        async getMonthlySavingsBreakdown(): Promise<{ year: number, month: number, monthYearStr: string, totalIncome: number, totalExpense: number, rawExpense: number, investments: number, netSavings: number, savingsChange: number, savingsChangePercent: number }[]> {
+            const url = new URL(`${API_BASE_URL}/api/v1/analytics/getMonthlySavingsBreakdown`);
+            const resp = await window.fetch(url.toString(), {
+                method: "GET",
+                credentials: 'same-origin',
+                headers: getAuthHeaders(),
+            });
+
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            this.monthlySavingsBreakdown = data.data as { year: number, month: number, monthYearStr: string, totalIncome: number, totalExpense: number, rawExpense: number, investments: number, netSavings: number, savingsChange: number, savingsChangePercent: number }[];
+            return this.monthlySavingsBreakdown;
+        },
         async createTransaction() {
             const newTransaction = {
                 id: Date.now(),
@@ -241,6 +262,9 @@ export const useTransactionStore = defineStore('transactionState', {
                 this.getDailyTotalSpendByTimeframe(),
             ]).catch((error) => {
                 console.error('Failed to update transactions and spends by categories:', error);
+                // Forcefully clear all the variables on failure of fetching transaction details.
+                // Helps to manage the auth store logout();
+                window.localStorage.clear();
             });
         },
         resetTransactionForm() {

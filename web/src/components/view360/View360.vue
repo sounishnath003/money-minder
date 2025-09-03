@@ -205,6 +205,75 @@
                 </div>
             </div>
 
+            <!-- Savings Breakdown: Month-on-Month -->
+            <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
+                &bull; Month-on-Month Savings Breakdown
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="font-medium text-gray-700 dark:text-gray-300">Year:</label>
+                    <select v-model="savingsSelectedYear" :class="formInputCss">
+                        <option v-for="y in savingsYears" :key="y" :value="y">{{ y }}</option>
+                    </select>
+                    <label class="font-medium text-gray-700 dark:text-gray-300">Include Investments</label>
+                    <input v-model="includeInvestments" type="checkbox" class="h-5 w-5" />
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Month</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Income</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Expense</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Net Savings</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    MoM Change</th>
+                                <th
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    MoM %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="row in savingsRowsComputed" :key="row.monthYearStr"
+                                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{ row.monthYearStr }}
+                                </td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
+                                    INRRuppe.format(row.totalIncome) }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">{{
+                                    INRRuppe.format(row.totalExpense) }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-semibold"
+                                    :class="row.netSavings >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                    {{
+                                        INRRuppe.format(row.netSavings) }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    :class="row.savingsChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                    {{
+                                        INRRuppe.format(row.savingsChange) }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-semibold"
+                                    :class="row.savingsChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                    {{
+                                        row.savingsChangePercent > 0 ? '+' : '' }}{{
+                                        Number(row.savingsChangePercent).toFixed(2) }}%</td>
+                            </tr>
+                            <tr v-if="savingsRowsComputed.length === 0">
+                                <td colspan="6" class="px-4 py-2 text-center text-gray-400">No data for selected year.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="text-lg md:text-2xl font-semibold text-blue-600 dark:text-gray-200">
                 &bull; All Transactions in the selected period ({{ filteredData.length }})
             </div>
@@ -324,9 +393,13 @@ const allCategories = ref([]);
 const allPaymentMethods = ref([]);
 const allYears = ref([]);
 const isLoading = ref(true);
+const savingsYears = ref([]);
+const savingsSelectedYear = ref('');
+const includeInvestments = ref(false);
 
 onMounted(async () => {
     await transactionStore.getSpendOnCategoriesByAllYearMonthAggregated();
+    await transactionStore.getMonthlySavingsBreakdown();
     // Extract unique categories and years, excluding income categories
     const cats = Array.from(new Set(transactionStore.spendOnCategoriesByAllYearMonthAggregated.map(d => d.category)));
     allCategories.value = cats.filter(cat => !INCOME_CATEGORIES.includes(cat));
@@ -335,6 +408,9 @@ onMounted(async () => {
     const years = Array.from(new Set(transactionStore.spendOnCategoriesByAllYearMonthAggregated.map(d => d.year)));
     allYears.value = years.sort((a, b) => b - a);
     selectedYear.value = allYears.value[0] || '';
+    const ys = Array.from(new Set(transactionStore.monthlySavingsBreakdown.map(d => d.year))).sort((a, b) => b - a);
+    savingsYears.value = ys;
+    savingsSelectedYear.value = savingsYears.value[0] || '';
     isLoading.value = false;
 });
 
@@ -518,8 +594,15 @@ watch(
 
 const monthsForYear = computed(() => {
     if (!compareYear.value) return [];
-    // All unique monthYearStrs for the selected year
-    return Array.from(new Set(filteredData.value.filter(d => d.year === Number(compareYear.value)).map(d => d.monthYearStr))).sort();
+    // Unique monthYearStrs for the selected year but sorted by numeric Month
+    const items = filteredData.value
+        .filter(d => d.year === Number(compareYear.value))
+        .map(d => ({ key: d.monthYearStr, monthNum: d.month }));
+    const byKey = new Map();
+    items.forEach(it => { if (!byKey.has(it.key)) byKey.set(it.key, it.monthNum); });
+    return Array.from(byKey.entries())
+        .sort((a, b) => a[1] - b[1])
+        .map(([key]) => key);
 });
 
 const compareMonth1 = ref('');
@@ -529,11 +612,14 @@ const compareMonth2 = ref('');
 watch(
     [() => monthsForYear.value, () => compareYear.value],
     ([months]) => {
-        if (months.length && (!compareMonth1.value || !months.includes(compareMonth1.value))) {
-            compareMonth1.value = months[1]; // Older month
+        if (!months.length) return;
+        const lastIdx = months.length - 1;
+        const prevIdx = Math.max(0, lastIdx - 1);
+        if (!compareMonth1.value || !months.includes(compareMonth1.value)) {
+            compareMonth1.value = months[prevIdx]; // Older month
         }
-        if (months.length && (!compareMonth2.value || !months.includes(compareMonth2.value))) {
-            compareMonth2.value = months[0]; // Newer month
+        if (!compareMonth2.value || !months.includes(compareMonth2.value)) {
+            compareMonth2.value = months[lastIdx]; // Newer month
         }
     },
     { immediate: true }
@@ -579,5 +665,46 @@ const excludedCategorySummaries = computed(() => {
         summaries.push({ category, total, timeline });
     });
     return summaries;
+});
+
+// Savings rows filtered by selected savings year
+const savingsRows = computed(() => {
+    if (!savingsSelectedYear.value) return [];
+    return (transactionStore.monthlySavingsBreakdown || [])
+        .filter(d => d.year === Number(savingsSelectedYear.value))
+        .sort((a, b) => a.month - b.month);
+});
+
+// Apply toggle to compute totals and deltas based on includeInvestments
+const savingsRowsComputed = computed(() => {
+    const rows = savingsRows.value;
+    if (!rows.length) return [];
+    if (includeInvestments.value) {
+        // Already includes investments in TotalExpense and NetSavings from backend
+        return rows;
+    }
+    // Exclude investments: recompute TotalExpense and NetSavings and MoM change
+    const mapped = rows.map((r) => {
+        const totalExpense = r.rawExpense ?? r.totalExpense; // fallback
+        const netSavings = r.totalIncome - totalExpense;
+        return {
+            ...r,
+            totalExpense,
+            netSavings,
+        };
+    });
+    // Recompute MoM change and percent
+    for (let i = 0; i < mapped.length; i++) {
+        const prev = i > 0 ? mapped[i - 1] : undefined;
+        if (!prev) {
+            mapped[i].savingsChange = 0;
+            mapped[i].savingsChangePercent = 0;
+        } else {
+            const diff = mapped[i].netSavings - prev.netSavings;
+            mapped[i].savingsChange = diff;
+            mapped[i].savingsChangePercent = prev.netSavings === 0 ? 0 : (diff / Math.abs(prev.netSavings)) * 100;
+        }
+    }
+    return mapped;
 });
 </script>

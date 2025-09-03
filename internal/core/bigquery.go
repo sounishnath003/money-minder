@@ -311,3 +311,49 @@ func (cbq *CustomBigQueryClient) GetSpendOnCategoriesByAllYearMonthAggregated(us
 
 	return results, nil
 }
+
+type MonthlySavingsBreakdown struct {
+	Year                 int     `json:"year"`
+	Month                int     `json:"month"`
+	MonthYearStr         string  `json:"monthYearStr"`
+	TotalIncome          int     `json:"totalIncome"`
+	TotalExpense         int     `json:"totalExpense"`
+	RawExpense           int     `json:"rawExpense"`
+	Investments          int     `json:"investments"`
+	NetSavings           int     `json:"netSavings"`
+	SavingsChange        int     `json:"savingsChange"`
+	SavingsChangePercent float64 `json:"savingsChangePercent"`
+}
+
+// GetMonthlySavingsBreakdown helps to get the monthly savings breakdown with month-on-month comparison
+func (cbq *CustomBigQueryClient) GetMonthlySavingsBreakdown(userId int) ([]MonthlySavingsBreakdown, error) {
+	query := cbq.Query(ANALYTICS_MONTHLY_SAVINGS_BREAKDOWN)
+	query.Parameters = []bigquery.QueryParameter{
+		{
+			Name:  "UserID",
+			Value: userId,
+		},
+	}
+
+	it, err := query.Read(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var results []MonthlySavingsBreakdown
+
+	for {
+		var savings MonthlySavingsBreakdown
+		err := it.Next(&savings)
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, savings)
+	}
+
+	return results, nil
+}

@@ -113,6 +113,7 @@ func defineApiRouterV1Endpoints() http.Handler {
 	protectedMux.HandleFunc("GET /analytics/getDailySpendByTimeframe", v1.GetDailyTotalSpendByTimeframeHandler)
 	protectedMux.HandleFunc("GET /analytics/getSpendOnCategoriesMonthOnMonth", v1.GetSpendOnCategoriesMonthOnMonthHandler)
 	protectedMux.HandleFunc("GET /analytics/getSpendOnCategoriesByAggregatedByYearMonth", v1.GetSpendOnCategoriesByAllYearMonthAggregatedHandler)
+	protectedMux.HandleFunc("GET /analytics/getMonthlySavingsBreakdown", v1.GetMonthlySavingsBreakdownHandler)
 
 	router.Handle("/transactions", MiddlewareChain(protectedMux, AuthJWTMiddleware()))
 	router.Handle("/transactions/", MiddlewareChain(protectedMux, AuthJWTMiddleware()))
